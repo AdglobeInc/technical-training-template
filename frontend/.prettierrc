@@ -1,0 +1,5 @@
+{
+  "importOrder": ["<THIRD_PARTY_MODULES>", "^@", "^~", "^[./]"],
+  "semi": true,
+  "trailingComma": "all"
+}

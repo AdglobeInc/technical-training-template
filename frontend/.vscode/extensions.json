@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "esbenp.prettier-vscode",
+        "vue.vscode-typescript-vue-plugin",
+        "vue.volar",
+        "dbaeumer.vscode-eslint",
+        "streetsidesoftware.code-spell-checker",
+        "ms-vscode-remote.remote-wsl"
+    ]
+}
