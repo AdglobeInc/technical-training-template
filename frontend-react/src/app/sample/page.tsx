@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import { authRegister } from "../api/auth/register";
-import { isErrorResponse } from "../types/api/base";
 import { AuthLogin } from "../api/auth/login";
 import { AuthLogout } from "../api/auth/logout";
+import { authRegister } from "../api/auth/register";
 import { AuthUser } from "../api/auth/user";
-import styles from "./page.module.css";
-import { Input } from "./_components/Input/Input";
+import { isErrorResponse } from "../types/api/base";
 import { Button } from "./_components/Button/Button";
+import { Input } from "./_components/Input/Input";
+import styles from "./page.module.css";
 
 const Sample = () => {
   const [auth, setAuth] = useState({
@@ -33,7 +33,7 @@ const Sample = () => {
       const { name, value } = e.target;
       setRegisterInfo((prev) => ({ ...prev, [name]: value }));
     },
-    []
+    [],
   );
 
   const handleOnChangeLogin = useCallback(
@@ -41,7 +41,7 @@ const Sample = () => {
       const { name, value } = e.target;
       setLoginInfo((prev) => ({ ...prev, [name]: value }));
     },
-    []
+    [],
   );
 
   const handleRegister = useCallback(async () => {
