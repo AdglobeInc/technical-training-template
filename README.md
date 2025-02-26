@@ -112,9 +112,6 @@ npm install && npm run dev
 ```bash
 # ビルドコマンド
 npm run build
-# ビルド後に実行するコマンド
-# Nuxt3 はビルド後に .env を読み込んでくれないため、HOST と PORT は起動時に設定する必要がある
-source .env && HOST=$HOST PORT=$PORT node .output/server/index.mjs
 ```
 
 <a id="backend"></a>
@@ -208,7 +205,7 @@ VSCode が起動したら右下に画像のような通知が表示されるた�
 
 以下を参考に開発を行ってください。
 
-- [Nuxt.js の開発について](https://wiki.adglobe.co.jp/doc/vuejsnuxtjs-jsQAbcZvZy)
+- [Next.js の開発について](https://nextjs.org/)
 - [Laravel の開発について](https://wiki.adglobe.co.jp/doc/laravel-Stxl3Ci80z)
 
 [/frontend/pages/sample.vue](http://localhost:3000/sample) に API 通信のサンプルを実装してあるため、こちらも参考程度に目を通しておいてください。
