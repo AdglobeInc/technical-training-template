@@ -14,17 +14,15 @@ const Sample = () => {
   const [auth, setAuth] = useState({
     token: "",
     name: "",
-    email: "",
   });
 
   const [registerInfo, setRegisterInfo] = useState({
     name: "",
-    email: "",
     password: "",
   });
 
   const [loginInfo, setLoginInfo] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
@@ -54,7 +52,6 @@ const Sample = () => {
         ...prev,
         token: response.token,
         name: response.name,
-        email: response.email,
       }));
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
@@ -69,29 +66,18 @@ const Sample = () => {
       // 登録リクエストの送信
       // 非同期で実行されるため await で待ち受ける
       const loginResponse = await AuthLogin(loginInfo);
-      console.log(loginResponse);
 
       // エラー処理
       if (isErrorResponse(loginResponse)) {
         return alert(loginResponse.errorMessage);
       }
 
-      const userResponse = await AuthUser({
-        token: loginResponse.token,
-      });
-      console.log(userResponse);
+      const userResponse = await AuthUser();
 
       // エラー処理
       if (isErrorResponse(userResponse)) {
         return alert(userResponse.errorMessage);
       }
-
-      setAuth((prev) => ({
-        ...prev,
-        token: loginResponse.token,
-        name: userResponse.name,
-        email: userResponse.email,
-      }));
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
       console.error(e);
@@ -104,7 +90,7 @@ const Sample = () => {
     try {
       // 登録リクエストの送信
       // 非同期で実行されるため await で待ち受ける
-      const response = await AuthLogout(auth);
+      const response = await AuthLogout();
       console.log(response);
 
       setAuth((prev) => ({
@@ -137,17 +123,6 @@ const Sample = () => {
           </p>
           <p>
             <label>
-              メールアドレス:
-              <Input
-                name="email"
-                value={registerInfo.email}
-                onChange={handleOnChangeRegister}
-                type="email"
-              />
-            </label>
-          </p>
-          <p>
-            <label>
               パスワード:
               <Input
                 name="password"
@@ -167,12 +142,12 @@ const Sample = () => {
         <div className={styles.form}>
           <p>
             <label>
-              メールアドレス:
+              ユーザID:
               <Input
-                name="email"
-                value={loginInfo.email}
+                name="username"
+                value={loginInfo.username}
                 onChange={handleOnChangeLogin}
-                type="email"
+                type="text"
               />
             </label>
           </p>
@@ -202,10 +177,6 @@ const Sample = () => {
           <p>
             名前:
             <span>{auth.name}</span>
-          </p>
-          <p>
-            メールアドレス:
-            <span>{auth.email}</span>
           </p>
         </div>
         <Button type="button" className={styles.button} onClick={handleLogout}>

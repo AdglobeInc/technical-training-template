@@ -1,11 +1,10 @@
 export interface RegisterRequest {
   name: string;
-  email: string;
   password: string;
 }
 
 export interface LoginRequest {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -23,5 +22,4 @@ export interface UserRequest {
 
 export interface UserResponse {
   name: string;
-  email: string;
 }
