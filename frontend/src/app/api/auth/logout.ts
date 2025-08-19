@@ -6,10 +6,7 @@ import { LogoutRequest } from "@/app/types/api/auth";
  * @returns
  */
 export const AuthLogout = async (request: LogoutRequest): Promise<void> => {
-  const url = new URL(
-    "/api/auth",
-    process.env.NEXT_PUBLIC_API_BASE_URL
-  ).toString();
+  const url = new URL("/api/auth", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
 
   fetch(url, {
     headers: {

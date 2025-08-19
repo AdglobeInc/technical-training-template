@@ -28,21 +28,15 @@ const Sample = () => {
     password: "",
   });
 
-  const handleOnChangeRegister = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      setRegisterInfo((prev) => ({ ...prev, [name]: value }));
-    },
-    [],
-  );
+  const handleOnChangeRegister = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setRegisterInfo((prev) => ({ ...prev, [name]: value }));
+  }, []);
 
-  const handleOnChangeLogin = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      setLoginInfo((prev) => ({ ...prev, [name]: value }));
-    },
-    [],
-  );
+  const handleOnChangeLogin = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLoginInfo((prev) => ({ ...prev, [name]: value }));
+  }, []);
 
   const handleRegister = useCallback(async () => {
     try {
@@ -164,11 +158,7 @@ const Sample = () => {
             </label>
           </p>
         </div>
-        <Button
-          type="button"
-          className={styles.button}
-          onClick={handleRegister}
-        >
+        <Button type="button" className={styles.button} onClick={handleRegister}>
           登録
         </Button>
       </fieldset>

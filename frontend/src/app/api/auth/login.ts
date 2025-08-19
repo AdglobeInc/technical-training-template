@@ -5,9 +5,7 @@ import { LoginRequest, LoginResponse } from "@/app/types/api/auth";
  * @param request
  * @returns
  */
-export const AuthLogin = async (
-  request: LoginRequest
-): Promise<LoginResponse> => {
+export const AuthLogin = async (request: LoginRequest): Promise<LoginResponse> => {
   const url = new URL("/api/auth", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
   const response = await fetch(url, {
     headers: {

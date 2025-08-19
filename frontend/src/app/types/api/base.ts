@@ -4,8 +4,6 @@ export interface ErrorResponse {
   cause?: unknown;
 }
 
-export const isErrorResponse = (
-  response: unknown
-): response is ErrorResponse => {
+export const isErrorResponse = (response: unknown): response is ErrorResponse => {
   return (response as ErrorResponse).status === "error";
 };

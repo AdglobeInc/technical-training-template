@@ -1,8 +1,4 @@
-import {
-  LoginResponse,
-  RegisterRequest,
-  UserResponse,
-} from "@/app/types/api/auth";
+import { LoginResponse, RegisterRequest, UserResponse } from "@/app/types/api/auth";
 import { ErrorResponse } from "@/app/types/api/base";
 
 /**
@@ -11,7 +7,7 @@ import { ErrorResponse } from "@/app/types/api/base";
  * @returns
  */
 export const authRegister = async (
-  request: RegisterRequest
+  request: RegisterRequest,
 ): Promise<ErrorResponse | (LoginResponse & UserResponse)> => {
   const url = new URL("/api/users", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
   const response = await fetch(url, {

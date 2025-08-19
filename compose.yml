@@ -1,0 +1,66 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    entrypoint: /app/entrypoint.sh
+    command: watchfiles "python manage.py runserver 0.0.0.0:8000" .
+    volumes:
+      - ./backend:/app
+      - /app/.ruff_cache
+      - /app/build
+    ports:
+      - 8000:8000
+    environment:
+      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - ADMIN_USER=${DJANGO_ADMIN_USER}
+      - ADMIN_PASS=${DJANGO_ADMIN_PASS}
+    depends_on:
+      - pgsql
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    command: bun dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - 3000:3000
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+      - NEXT_PUBLIC_API_TEST_URL=${NEXT_PUBLIC_API_TEST_URL}
+
+  pgsql:
+    image: postgres:17-alpine
+    container_name: pgsql
+    volumes:
+      - postgres-data:/var/lib/postgresql/data/
+    ports:
+      - ${DB_PORT}:5432
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+
+  pgweb:
+    image: sosedoff/pgweb
+    container_name: pgweb
+    ports:
+      - 8081:8081
+    environment:
+      - PGWEB_DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable
+    depends_on:
+      - pgsql
+
+volumes:
+  postgres-data:
