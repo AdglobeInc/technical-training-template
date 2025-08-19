@@ -7,7 +7,7 @@ const protectedPaths = ["/", "/profile"];
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
   const { pathname } = request.nextUrl;
-  const loginUrl = new URL("/login", request.url);
+  const loginUrl = new URL("/sample", request.url);
   console.log("--- Middleware Log ---");
   console.log("Accessing Pathname:", pathname);
   console.log("Token Exists:", !!token);
@@ -22,10 +22,13 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
+    // NEXT_PUBLIC_API_BASE_URLにbackend:8000も追加
     const url = new URL("/api/auth/token/verify/", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
+    // const url = new URL("", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
     console.log("★★★★★★★★★★★★★★★★★★");
 
-    const response = await fetch(url, {
+    // const response = await fetch("http://backend:8000/api/auth/token/verify/", {
+    const response = await fetch("url", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,8 +37,8 @@ export async function middleware(request: NextRequest) {
     });
 
     if (response.ok) {
-      if (pathname === "/login") {
-        return NextResponse.redirect(new URL("/", request.url));
+      if (pathname === "/sample") {
+        return NextResponse.redirect(new URL("/profile", request.url));
       }
       return NextResponse.next();
     }

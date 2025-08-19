@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 import { AuthLogin } from "../api/auth/login";
 import { AuthLogout } from "../api/auth/logout";
@@ -11,6 +12,7 @@ import { Input } from "./_components/Input/Input";
 import styles from "./page.module.css";
 
 const Sample = () => {
+  const router = useRouter();
   const [auth, setAuth] = useState({
     token: "",
     name: "",
@@ -66,6 +68,7 @@ const Sample = () => {
       // 登録リクエストの送信
       // 非同期で実行されるため await で待ち受ける
       const loginResponse = await AuthLogin(loginInfo);
+      console.log(loginResponse);
 
       // エラー処理
       if (isErrorResponse(loginResponse)) {
@@ -78,6 +81,7 @@ const Sample = () => {
       if (isErrorResponse(userResponse)) {
         return alert(userResponse.errorMessage);
       }
+      router.push("/profile");
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
       console.error(e);
