@@ -3,9 +3,9 @@
 set -e
 
 echo "Applying database migrations..."
-python manage.py migrate
+python src/manage.py migrate
 
 echo "Creating admin user..."
-python manage.py create_admin
+python src/manage.py create_admin
 
 exec "$@"

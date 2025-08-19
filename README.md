@@ -2,6 +2,9 @@
 
 - [Git](#git)
   - [ソースコードのダウンロード](#git-clone)
+- [初期設定](#initialize)
+  - [環境変数の設定](initialize-env)
+  - [開発コンテナの作成](initialize-container)
 - [Frontend](#frontend)
   - [初期設定](#frontend-initialize)
   - [起動](#frontend-run)
@@ -41,12 +44,38 @@ VSCode 起動後は[拡張機能のインストール](#vscode-extensions)を行
 
 # 初期設定
 
-Ubuntu ターミナルで以下のコマンドを実行し
+<a id="initialize-env"></a>
+
+## 環境変数の設定
+
+Ubuntu ターミナルで以下のコマンドを実行し、必要な環境変数を設定します。
 
 ```bash
 # .env ファイルの生成
 cp .env.example .env
 ```
+
+パスワード等の秘密情報には、任意の値を入れてください。
+
+<a id="initialize-container"></a>
+
+## 開発コンテナの作成と準備
+
+docker を起動後に以下のコマンドを実行し、開発コンテナを作成、起動します。
+
+```bash
+docker compose up -d
+```
+
+`Ctrl + Shift + P`を押して、`Dev Containers: Attach to Running Container...`を選択し、`backend`及び`frontend`を選択して`Enter`を押し、開発コンテナに入ります。
+
+`Ctrl + J`もしくは`Ctrl + @`でターミナルを開き、以下のコマンドを入力してワークスペースを開きます。
+
+```bash
+code /app
+```
+
+推奨の拡張機能をインストールします。
 
 <a id="frontend"></a>
 
@@ -158,7 +187,7 @@ sail artisan key:generate
 VSCode のターミナルで以下のコマンドを実行します。
 
 ```bash
-sail down
+docker compose down
 ```
 
 <a id="vscode"></a>
