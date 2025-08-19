@@ -3,17 +3,9 @@
 - [Git](#git)
   - [ソースコードのダウンロード](#git-clone)
 - [初期設定](#initialize)
-  - [環境変数の設定](initialize-env)
-  - [開発コンテナの作成](initialize-container)
-- [Frontend](#frontend)
-  - [初期設定](#frontend-initialize)
-  - [起動](#frontend-run)
-  - [停止](#frontend-stop)
-  - [ビルド](#frontend-build)
-- [Backend](#backend)
-  - [初期設定](#backend-initialize)
-  - [起動](#backend-run)
-  - [停止](#backend-stop)
+  - [環境変数の設定](#initialize-env)
+  - [開発コンテナの作成と準備](#initialize-container-setup)
+  - [開発コンテナの停止](#initialize-container-stop)
 - [VSCode](#vscode)
   - [拡張機能のインストール](#vscode-extensions)
 - [開発](#develop)
@@ -30,25 +22,26 @@
 
 ## ソースコードのダウンロード
 
-Ubuntu のターミナルを開き、任意のディレクトリで以下のコマンドを実行します。
+Ubuntu(WSL) 環境のターミナルを開き、任意のディレクトリで以下のコマンドを実行します。
 
 ```bash
 git clone <このリポジトリのURL>
 code <リポジトリ名>
 ```
 
-VSCode 起動後は[拡張機能のインストール](#vscode-extensions)を行ってください。  
-インストール後は VSCode を閉じてしまって問題ありません。
+VSCode 起動後は[拡張機能のインストール](#vscode-extensions)を行ってください。
 
 <a id="initialize"></a>
 
 # 初期設定
 
+以降、`git clone`してきたローカルリポジトリのディレクトリで作業を行ってください。
+
 <a id="initialize-env"></a>
 
 ## 環境変数の設定
 
-Ubuntu ターミナルで以下のコマンドを実行し、必要な環境変数を設定します。
+以下のコマンドを実行し、必要な環境変数を設定します。
 
 ```bash
 # .env ファイルの生成
@@ -57,7 +50,7 @@ cp .env.example .env
 
 パスワード等の秘密情報には、任意の値を入れてください。
 
-<a id="initialize-container"></a>
+<a id="initialize-container-setup"></a>
 
 ## 開発コンテナの作成と準備
 
@@ -67,124 +60,27 @@ docker を起動後に以下のコマンドを実行し、開発コンテナを�
 docker compose up -d
 ```
 
-`Ctrl + Shift + P`を押して、`Dev Containers: Attach to Running Container...`を選択し、`backend`及び`frontend`を選択して`Enter`を押し、開発コンテナに入ります。
+`Ctrl + Shift + P`を押下し、`Dev Containers: Attach to Running Container...`を選択後、`backend`及び`frontend`を選択して開発コンテナに入ります。
 
-`Ctrl + J`もしくは`Ctrl + @`でターミナルを開き、以下のコマンドを入力してワークスペースを開きます。
+以下のコマンドを入力してワークスペースを開きます。
 
 ```bash
 code /app
 ```
 
-推奨の拡張機能をインストールします。
-
-<a id="frontend"></a>
-
-# Frontend
-
-<a id="frontend-initialize"></a>
-
-## 初期設定
-
-Ubuntu ターミナルで以下のコマンドを実行し、VSCode を起動します。
-
-```bash
-code frontend/
-```
-
-VSCode 起動後は[拡張機能のインストール](#vscode-extensions)を行ってください。
-
-<a id="frontend-run"></a>
-
-## 起動
-
-VSCode で `Shift + Ctrl + @` を押下してターミナルを表示し、以下のコマンドを実行してください。
-
-```bash
-# .env ファイルの生成
-cp .env.example .env
-# パッケージのインストールとアプリの起動
-npm install && npm run dev
-```
+コンテナ内で推奨の[拡張機能をインストール](#vscode-extensions)を行ってください。
 
 起動後は以下の URL に接続できますので、実際にアクセスして確認してください。
 
-- http://localhost:3000
-
-<a id="frontend-stop"></a>
-
-## 停止
-
-起動コマンドを入力した VSCode のターミナルで `Ctrl + C` を入力します。
-
-<a id="frontend-build"></a>
-
-## ビルド
-
-ビルドを行うには以下のコマンドを実行してください。
-
-```bash
-# ビルドコマンド
-npm run build
-```
-
-<a id="backend"></a>
-
-# Backend
-
-<a id="backend-initialize"></a>
-
-## 初期設定
-
-Ubuntu ターミナルで以下のコマンドを実行し、VSCode を起動します。
-
-```bash
-code backend/
-```
-
-VSCode 起動後は[拡張機能のインストール](#vscode-extensions)を行ってください。
-
-その後 `Shift + Ctrl + @` を押下し、ターミナルを表示して以下のコマンドを実行してください。
-
-```bash
-# .env ファイルの生成
-cp .env.example .env
-# Composer パッケージの初期化
-docker run --rm \
-    -u "$(id -u):$(id -g)" \
-    -v $(pwd):/var/www/html \
-    -w /var/www/html \
-    laravelsail/php83-composer:latest \
-    composer install --ignore-platform-reqs
-# sail のエイリアス
-alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'
-```
-
-<a id="backend-run"></a>
-
-## 起動
-
-VSCode のターミナルで以下のコマンドを実行します。
-
-```bash
-sail up -d
-```
-
-初回起動時は続けて以下のコマンドを実行してください。
-
-```bash
-sail artisan key:generate
-```
-
-起動後は以下の URL に接続できますので、実際にアクセスして確認してください。
-
-- Laravel: http://localhost:8000
+- frontend: http://localhost:3000
+- backend: http://localhost:8000
 - pgweb(DB 管理): http://localhost:8081
 
-<a id="backend-stop"></a>
+<a id="initialize-container-stop"></a>
 
-## 停止
+## 開発コンテナの停止
 
-VSCode のターミナルで以下のコマンドを実行します。
+以下のコマンドを実行します。
 
 ```bash
 docker compose down
@@ -206,10 +102,11 @@ VSCode が起動したら右下に画像のような通知が表示されるた�
 > ### 通知が表示されない・通知を閉じてしまった場合
 >
 > 1. `Shift + Ctrl + P` を押下し、テキストボックスに `recommend` と入力します。
-> 2. 「拡張機能: ワークスペース フォルダーの推奨事項に拡張機能を追加する」を選択します。
->    ![image](https://user-images.githubusercontent.com/105618751/212533529-977c4078-6d5e-4db8-b7c3-2a3f7892c319.png)
->    - または `Shift + Ctrl + X` を押下し、テキストボックスに `@recommended` と入力します。
->      ![image](https://user-images.githubusercontent.com/105618751/212532098-fb170ed1-fdd8-488b-bbe8-c12eecfb5719.png)
+> 2. 「拡張機能: お勧めの拡張機能を表示」を選択します。
+>
+>    または `Shift + Ctrl + X` を押下し、テキストボックスに `@recommended` と入力します。
+>    ![image](https://user-images.githubusercontent.com/105618751/212532098-fb170ed1-fdd8-488b-bbe8-c12eecfb5719.png)
+>
 > 3. 表示された拡張機能をすべてインストールしてください。
 
 <a id="develop"></a>
@@ -220,6 +117,18 @@ VSCode が起動したら右下に画像のような通知が表示されるた�
 
 - [Next.js の開発について](https://nextjs.org/)
 - [Django の開発について](https://docs.djangoproject.com/ja/5.2/)
+  - ディレクトリ構成
+    - [project (zenn)](https://zenn.dev/tigrebiz/articles/python-django-tutorial#%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%82%92%E4%BD%9C%E6%88%90%E3%81%99%E3%82%8B)
+    - [app (zenn)](https://zenn.dev/tigrebiz/articles/python-django-tutorial#polls-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E3%81%A4%E3%81%8F%E3%82%8B)
+  - [django-admin と manage.py](https://docs.djangoproject.com/ja/5.2/ref/django-admin/)
+  - [ルーティング](https://docs.djangoproject.com/ja/5.2/topics/http/urls/)
+  - [コントローラ(View)](https://docs.djangoproject.com/ja/5.2/topics/class-based-views/intro/)
+  - [データベース](https://docs.djangoproject.com/ja/5.2/ref/databases/#postgresql-notes)
+    - [マイグレーション](https://docs.djangoproject.com/ja/5.2/topics/migrations/)
+    - [モデル](https://docs.djangoproject.com/ja/5.2/topics/db/models/)
+    - シーダー
+      - [フィクスチャ](https://docs.djangoproject.com/ja/5.2/howto/initial-data/)
+      - [カスタムコマンドによるシーダー (qiita)](https://qiita.com/shun198/items/14bac6843a2459b34a34)
 
 [frontend/src/app/sample/page.tsx](http://localhost:3000/sample) に API 通信のサンプルを実装してあるため、こちらも参考程度に目を通しておいてください。
 
