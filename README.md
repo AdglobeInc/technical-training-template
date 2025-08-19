@@ -117,6 +117,18 @@ VSCode が起動したら右下に画像のような通知が表示されるた�
 
 - [Next.js の開発について](https://nextjs.org/)
 - [Django の開発について](https://docs.djangoproject.com/ja/5.2/)
+  - ディレクトリ構成
+    - [project (zenn)](https://zenn.dev/tigrebiz/articles/python-django-tutorial#%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%82%92%E4%BD%9C%E6%88%90%E3%81%99%E3%82%8B)
+    - [app (zenn)](https://zenn.dev/tigrebiz/articles/python-django-tutorial#polls-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E3%81%A4%E3%81%8F%E3%82%8B)
+  - [django-admin と manage.py](https://docs.djangoproject.com/ja/5.2/ref/django-admin/)
+  - [ルーティング](https://docs.djangoproject.com/ja/5.2/topics/http/urls/)
+  - [コントローラ(View)](https://docs.djangoproject.com/ja/5.2/topics/class-based-views/intro/)
+  - [データベース](https://docs.djangoproject.com/ja/5.2/ref/databases/#postgresql-notes)
+    - [マイグレーション](https://docs.djangoproject.com/ja/5.2/topics/migrations/)
+    - [モデル](https://docs.djangoproject.com/ja/5.2/topics/db/models/)
+    - シーダー
+      - [フィクスチャ](https://docs.djangoproject.com/ja/5.2/howto/initial-data/)
+      - [カスタムコマンドによるシーダー (qiita)](https://qiita.com/shun198/items/14bac6843a2459b34a34)
 
 [frontend/src/app/sample/page.tsx](http://localhost:3000/sample) に API 通信のサンプルを実装してあるため、こちらも参考程度に目を通しておいてください。
 
