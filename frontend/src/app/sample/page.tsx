@@ -14,8 +14,7 @@ import styles from "./page.module.css";
 const Sample = () => {
   const router = useRouter();
   const [auth, setAuth] = useState({
-    token: "",
-    name: "",
+    id: "",
   });
 
   const [registerInfo, setRegisterInfo] = useState({
@@ -30,6 +29,7 @@ const Sample = () => {
 
   const handleOnChangeRegister = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log("aaa");
     setRegisterInfo((prev) => ({ ...prev, [name]: value }));
   }, []);
 
@@ -49,12 +49,6 @@ const Sample = () => {
       if (isErrorResponse(response)) {
         return alert(response.errorMessage);
       }
-
-      setAuth((prev) => ({
-        ...prev,
-        token: response.token,
-        name: response.name,
-      }));
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
       console.error(e);
@@ -68,7 +62,7 @@ const Sample = () => {
       // 登録リクエストの送信
       // 非同期で実行されるため await で待ち受ける
       const loginResponse = await AuthLogin(loginInfo);
-      console.log(loginResponse);
+      // console.log(loginResponse);
 
       // エラー処理
       if (isErrorResponse(loginResponse)) {
@@ -76,6 +70,8 @@ const Sample = () => {
       }
 
       const userResponse = await AuthUser();
+      console.log(userResponse);
+      setAuth({ id: userResponse.id });
 
       // エラー処理
       if (isErrorResponse(userResponse)) {
@@ -97,12 +93,9 @@ const Sample = () => {
       const response = await AuthLogout();
       console.log(response);
 
-      setAuth((prev) => ({
-        ...prev,
-        token: "",
-        name: "",
-        email: "",
-      }));
+      setAuth({
+        id: "",
+      });
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
       console.error(e);
@@ -175,12 +168,8 @@ const Sample = () => {
         <legend>最後にログインを行った認証情報</legend>
         <div className={styles.form}>
           <p>
-            アクセストークン:
-            <span>{auth.token}</span>
-          </p>
-          <p>
-            名前:
-            <span>{auth.name}</span>
+            ID:
+            <span>{auth.id}</span>
           </p>
         </div>
         <Button type="button" className={styles.button} onClick={handleLogout}>

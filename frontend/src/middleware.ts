@@ -22,13 +22,9 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    // NEXT_PUBLIC_API_BASE_URLにbackend:8000も追加
-    const url = new URL("/api/auth/token/verify/", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
-    // const url = new URL("", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
-    console.log("★★★★★★★★★★★★★★★★★★");
+    const url = new URL("/api/auth/token/verify/", process.env.INTERNAL_API_BASE_URL).toString();
 
-    // const response = await fetch("http://backend:8000/api/auth/token/verify/", {
-    const response = await fetch("url", {
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

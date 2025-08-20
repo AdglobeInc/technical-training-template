@@ -6,7 +6,7 @@ import { LoginRequest, LoginResponse } from "@/app/types/api/auth";
  * @returns
  */
 export const AuthLogin = async (request: LoginRequest): Promise<LoginResponse> => {
-  console.log(request);
+  // console.log(request);
 
   const url = new URL("/api/auth/login/", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
 

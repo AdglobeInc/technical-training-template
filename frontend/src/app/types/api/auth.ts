@@ -21,5 +21,5 @@ export interface UserRequest {
 }
 
 export interface UserResponse {
-  name: string;
+  id: string;
 }
