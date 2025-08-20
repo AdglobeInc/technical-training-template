@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from concurrent.futures import ThreadPoolExecutor
-from django.contrib.auth import authenticate
+# from concurrent.futures import ThreadPoolExecutor
+# from django.contrib.auth import authenticate
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import (
@@ -112,17 +112,33 @@ class LogoutView(APIView):
         return response
 
 
-class ProfileView(APIView):
-    """
-    認証されたユーザーの情報を返す（変更なし）
-    """
+# class ProfileView(APIView):
+#     """
+#     認証されたユーザーの情報を返す（変更なし）
+#     """
 
-    permission_classes = [IsAuthenticated]
+#     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        user_data = {
-            "id": request.user.id,
-            "username": request.user.username,
-            "email": request.user.email,
-        }
-        return Response(user_data, status=status.HTTP_200_OK)
+#     def get(self, request, *args, **kwargs):
+#         user_data = {
+#             "id": request.user.id,
+#             "username": request.user.username,
+#             "email": request.user.email,
+#         }
+#         return Response(user_data, status=status.HTTP_200_OK)
+
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = UserSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(
+                {"message": "ユーザー登録が成功しました。"}, status=status.HTTP_201_CREATED
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
