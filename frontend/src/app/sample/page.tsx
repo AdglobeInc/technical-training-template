@@ -18,7 +18,7 @@ const Sample = () => {
   });
 
   const [registerInfo, setRegisterInfo] = useState({
-    name: "",
+    username: "",
     password: "",
   });
 
@@ -29,7 +29,6 @@ const Sample = () => {
 
   const handleOnChangeRegister = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log("aaa");
     setRegisterInfo((prev) => ({ ...prev, [name]: value }));
   }, []);
 
@@ -43,7 +42,6 @@ const Sample = () => {
       // 登録リクエストの送信
       // 非同期で実行されるため await で待ち受ける
       const response = await authRegister(registerInfo);
-      console.log(response);
 
       // エラー処理
       if (isErrorResponse(response)) {
@@ -70,14 +68,13 @@ const Sample = () => {
       }
 
       const userResponse = await AuthUser();
-      console.log(userResponse);
       setAuth({ id: userResponse.id });
 
       // エラー処理
       if (isErrorResponse(userResponse)) {
         return alert(userResponse.errorMessage);
       }
-      router.push("/profile");
+      router.push("/sample_profile");
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
       console.error(e);
@@ -90,12 +87,12 @@ const Sample = () => {
     try {
       // 登録リクエストの送信
       // 非同期で実行されるため await で待ち受ける
-      const response = await AuthLogout();
-      console.log(response);
+      await AuthLogout();
 
       setAuth({
         id: "",
       });
+      router.push("/sample");
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
       console.error(e);
@@ -111,8 +108,8 @@ const Sample = () => {
             <label>
               名前:
               <Input
-                name="name"
-                value={registerInfo.name}
+                name="username"
+                value={registerInfo.username}
                 onChange={handleOnChangeRegister}
                 type="text"
               />

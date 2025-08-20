@@ -9,13 +9,15 @@ import { ErrorResponse } from "@/app/types/api/base";
 export const authRegister = async (
   request: RegisterRequest,
 ): Promise<ErrorResponse | (LoginResponse & UserResponse)> => {
-  const url = new URL("/api/users", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
-  const response = await fetch(url, {
+  // const url = new URL("/api/users/", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
+  // const response = await fetch(url, {
+  const response = await fetch("http://localhost:8000/api/auth/users/", {
     headers: {
       "Content-Type": "application/json",
     },
     method: "POST",
     body: JSON.stringify(request),
+    credentials: "include",
   });
   return response.json();
 };
