@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 import { AuthLogin } from "../api/auth/login";
 import { AuthLogout } from "../api/auth/logout";
@@ -11,25 +12,24 @@ import { Input } from "./_components/Input/Input";
 import styles from "./page.module.css";
 
 const Sample = () => {
+  const router = useRouter();
   const [auth, setAuth] = useState({
-    token: "",
-    name: "",
-    email: "",
+    id: "",
   });
 
   const [registerInfo, setRegisterInfo] = useState({
     name: "",
-    email: "",
     password: "",
   });
 
   const [loginInfo, setLoginInfo] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
   const handleOnChangeRegister = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log("aaa");
     setRegisterInfo((prev) => ({ ...prev, [name]: value }));
   }, []);
 
@@ -49,13 +49,6 @@ const Sample = () => {
       if (isErrorResponse(response)) {
         return alert(response.errorMessage);
       }
-
-      setAuth((prev) => ({
-        ...prev,
-        token: response.token,
-        name: response.name,
-        email: response.email,
-      }));
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
       console.error(e);
@@ -69,29 +62,22 @@ const Sample = () => {
       // 登録リクエストの送信
       // 非同期で実行されるため await で待ち受ける
       const loginResponse = await AuthLogin(loginInfo);
-      console.log(loginResponse);
+      // console.log(loginResponse);
 
       // エラー処理
       if (isErrorResponse(loginResponse)) {
         return alert(loginResponse.errorMessage);
       }
 
-      const userResponse = await AuthUser({
-        token: loginResponse.token,
-      });
+      const userResponse = await AuthUser();
       console.log(userResponse);
+      setAuth({ id: userResponse.id });
 
       // エラー処理
       if (isErrorResponse(userResponse)) {
         return alert(userResponse.errorMessage);
       }
-
-      setAuth((prev) => ({
-        ...prev,
-        token: loginResponse.token,
-        name: userResponse.name,
-        email: userResponse.email,
-      }));
+      router.push("/profile");
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
       console.error(e);
@@ -104,15 +90,12 @@ const Sample = () => {
     try {
       // 登録リクエストの送信
       // 非同期で実行されるため await で待ち受ける
-      const response = await AuthLogout(auth);
+      const response = await AuthLogout();
       console.log(response);
 
-      setAuth((prev) => ({
-        ...prev,
-        token: "",
-        name: "",
-        email: "",
-      }));
+      setAuth({
+        id: "",
+      });
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
       console.error(e);
@@ -137,17 +120,6 @@ const Sample = () => {
           </p>
           <p>
             <label>
-              メールアドレス:
-              <Input
-                name="email"
-                value={registerInfo.email}
-                onChange={handleOnChangeRegister}
-                type="email"
-              />
-            </label>
-          </p>
-          <p>
-            <label>
               パスワード:
               <Input
                 name="password"
@@ -167,12 +139,12 @@ const Sample = () => {
         <div className={styles.form}>
           <p>
             <label>
-              メールアドレス:
+              ユーザID:
               <Input
-                name="email"
-                value={loginInfo.email}
+                name="username"
+                value={loginInfo.username}
                 onChange={handleOnChangeLogin}
-                type="email"
+                type="text"
               />
             </label>
           </p>
@@ -196,16 +168,8 @@ const Sample = () => {
         <legend>最後にログインを行った認証情報</legend>
         <div className={styles.form}>
           <p>
-            アクセストークン:
-            <span>{auth.token}</span>
-          </p>
-          <p>
-            名前:
-            <span>{auth.name}</span>
-          </p>
-          <p>
-            メールアドレス:
-            <span>{auth.email}</span>
+            ID:
+            <span>{auth.id}</span>
           </p>
         </div>
         <Button type="button" className={styles.button} onClick={handleLogout}>
