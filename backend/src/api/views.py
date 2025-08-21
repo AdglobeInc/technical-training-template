@@ -13,17 +13,18 @@ from rest_framework_simplejwt.views import (
 )
 from rest_framework_simplejwt.exceptions import TokenError
 from .serializers import UserSerializer
+from .models import User
 
 
 class GetUserView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user_id = request.user.id
+        username = request.user.username
 
-        print(user_id)
+        print(username)
 
-        return Response({"id": user_id})
+        return Response({"username": username})
 
 
 class LoginView(TokenObtainPairView):

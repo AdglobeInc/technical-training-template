@@ -3,6 +3,7 @@
 set -e
 
 echo "Applying database migrations..."
+python manage.py makemigrations api
 python manage.py migrate
 
 echo "Creating admin user..."
