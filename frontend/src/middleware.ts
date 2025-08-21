@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 // 認証が必要なページのパスを定義
-const protectedPaths = ["/", "/sample_profile"];
+const protectedPaths = ["/sample_profile"];
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;

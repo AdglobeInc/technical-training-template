@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-# from concurrent.futures import ThreadPoolExecutor
-# from django.contrib.auth import authenticate
+from concurrent.futures import ThreadPoolExecutor
+from django.contrib.auth import authenticate
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import (
@@ -15,11 +15,13 @@ from rest_framework_simplejwt.exceptions import TokenError
 from .serializers import UserSerializer
 
 
-class GetUserIdView(APIView):
+class GetUserView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user_id = request.user.id
+
+        print(user_id)
 
         return Response({"id": user_id})
 
@@ -105,35 +107,18 @@ class LogoutView(APIView):
 
     permission_classes = [AllowAny]
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, *args, **kwargs):
         response = Response({"message": "ログアウトしました。"}, status=status.HTTP_200_OK)
         response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])
         response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"])
         return response
 
 
-# class ProfileView(APIView):
-#     """
-#     認証されたユーザーの情報を返す（変更なし）
-#     """
-
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request, *args, **kwargs):
-#         user_data = {
-#             "id": request.user.id,
-#             "username": request.user.username,
-#             "email": request.user.email,
-#         }
-#         return Response(user_data, status=status.HTTP_200_OK)
-
-
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         serializer = UserSerializer(data=request.data)
-
         if serializer.is_valid():
             serializer.save()
 
@@ -141,4 +126,4 @@ class RegisterView(APIView):
                 {"message": "ユーザー登録が成功しました。"}, status=status.HTTP_201_CREATED
             )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)

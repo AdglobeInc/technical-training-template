@@ -1,5 +1,7 @@
 "use client";
 
+import { RegisterErrors } from "@/app/types/api/base";
+import { validateRegisterForm } from "@/app/utils/validation";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 import { AuthLogin } from "../api/auth/login";
@@ -26,6 +28,7 @@ const Sample = () => {
     username: "",
     password: "",
   });
+  const [errors, setErrors] = useState<RegisterErrors>({});
 
   const handleOnChangeRegister = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,15 +41,32 @@ const Sample = () => {
   }, []);
 
   const handleRegister = useCallback(async () => {
+    console.log(registerInfo);
+
+    const validationErrors = validateRegisterForm(registerInfo);
+    console.log(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
+
     try {
       // 登録リクエストの送信
       // 非同期で実行されるため await で待ち受ける
-      const response = await authRegister(registerInfo);
 
-      // エラー処理
+      const response = await authRegister(registerInfo);
       if (isErrorResponse(response)) {
         return alert(response.errorMessage);
       }
+
+      setRegisterInfo({
+        username: "",
+        password: "",
+      });
+
+      // エラー処理
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
       console.error(e);
@@ -60,7 +80,7 @@ const Sample = () => {
       // 登録リクエストの送信
       // 非同期で実行されるため await で待ち受ける
       const loginResponse = await AuthLogin(loginInfo);
-      // console.log(loginResponse);
+      console.log(loginResponse);
 
       // エラー処理
       if (isErrorResponse(loginResponse)) {
@@ -68,12 +88,13 @@ const Sample = () => {
       }
 
       const userResponse = await AuthUser();
-      setAuth({ id: userResponse.id });
+      console.log(userResponse);
 
       // エラー処理
       if (isErrorResponse(userResponse)) {
         return alert(userResponse.errorMessage);
       }
+      setAuth({ id: userResponse.id });
       router.push("/sample_profile");
     } catch (e) {
       // HTTPステータスコードが異常値の場合は例外として検知できる
@@ -106,7 +127,7 @@ const Sample = () => {
         <div className={styles.form}>
           <p>
             <label>
-              名前:
+              ユーザーID:
               <Input
                 name="username"
                 value={registerInfo.username}
