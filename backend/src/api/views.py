@@ -15,11 +15,13 @@ from rest_framework_simplejwt.exceptions import TokenError
 from .serializers import UserSerializer
 
 
-class GetUserIdView(APIView):
+class GetUserView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user_id = request.user.id
+
+        print(user_id)
 
         return Response({"id": user_id})
 
@@ -105,24 +107,23 @@ class LogoutView(APIView):
 
     permission_classes = [AllowAny]
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, *args, **kwargs):
         response = Response({"message": "ログアウトしました。"}, status=status.HTTP_200_OK)
         response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])
         response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"])
         return response
 
 
-class ProfileView(APIView):
-    """
-    認証されたユーザーの情報を返す（変更なし）
-    """
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
 
-    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
 
-    def get(self, request, *args, **kwargs):
-        user_data = {
-            "id": request.user.id,
-            "username": request.user.username,
-            "email": request.user.email,
-        }
-        return Response(user_data, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "ユーザー登録が成功しました。"}, status=status.HTTP_201_CREATED
+            )
+
+        return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)

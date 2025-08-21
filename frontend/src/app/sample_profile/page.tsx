@@ -1,15 +1,13 @@
 "use client";
 import { AuthLogout } from "@/app/api/auth/logout";
-import { useRouter } from "next/navigation";
 function Page() {
-  const router = useRouter();
   const handleLogout = async () => {
     try {
       await AuthLogout();
     } catch (e) {
       console.error(e);
     } finally {
-      router.push("/sample");
+      window.location.href = "/sample";
     }
   };
 

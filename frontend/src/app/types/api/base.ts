@@ -1,3 +1,5 @@
+import { RegisterRequest } from "@/app/types/api/auth";
+
 export interface ErrorResponse {
   status: "error";
   errorMessage?: string;
@@ -7,3 +9,4 @@ export interface ErrorResponse {
 export const isErrorResponse = (response: unknown): response is ErrorResponse => {
   return (response as ErrorResponse).status === "error";
 };
+export type RegisterErrors = Partial<Record<keyof RegisterRequest, string>>;
