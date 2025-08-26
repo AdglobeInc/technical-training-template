@@ -1,25 +1,30 @@
-export interface RegisterRequest {
+export type RegisterRequest = {
   username: string;
   password: string;
-}
+};
+export type RegisterResponse = UserResponse;
+export type RegisterErrorResponse = {
+  message: string;
+};
+// export type RegisterErrors = Partial<Record<keyof RegisterRequest, string>>;
 
-export interface LoginRequest {
+export type LoginRequest = {
   username: string;
   password: string;
-}
+};
+export type LoginResponse = UserResponse;
+export type LoginErrorResponse = {
+  message: string;
+};
 
-export interface LoginResponse {
-  token: string;
-}
+export type LogoutResponse = null;
+export type LogoutErrorResponse = {
+  message: string;
+};
 
-export interface LogoutRequest {
-  token: string;
-}
-
-export interface UserRequest {
-  token: string;
-}
-
-export interface UserResponse {
+export type UserResponse = {
   id: string;
-}
+};
+export type UserErrorResponse = {
+  message: string;
+};

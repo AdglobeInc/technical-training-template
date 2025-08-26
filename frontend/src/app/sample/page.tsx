@@ -4,20 +4,15 @@ import { RegisterErrors } from "@/app/types/api/base";
 import { validateRegisterForm } from "@/app/utils/validation";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
-import { AuthLogin } from "../api/auth/login";
-import { AuthLogout } from "../api/auth/logout";
+import { authLogin } from "../api/auth/login";
 import { authRegister } from "../api/auth/register";
-import { AuthUser } from "../api/auth/user";
-import { isErrorResponse } from "../types/api/base";
+import { authUser } from "../api/auth/user";
 import { Button } from "./_components/Button/Button";
 import { Input } from "./_components/Input/Input";
 import styles from "./page.module.css";
 
 const Sample = () => {
   const router = useRouter();
-  const [auth, setAuth] = useState({
-    id: "",
-  });
 
   const [registerInfo, setRegisterInfo] = useState({
     username: "",
@@ -51,74 +46,35 @@ const Sample = () => {
       return;
     }
     setErrors({});
-
-    try {
-      // 登録リクエストの送信
-      // 非同期で実行されるため await で待ち受ける
-
-      const response = await authRegister(registerInfo);
-      if (isErrorResponse(response)) {
-        return alert(response.errorMessage);
-      }
-
-      setRegisterInfo({
-        username: "",
-        password: "",
-      });
-
-      // エラー処理
-    } catch (e) {
-      // HTTPステータスコードが異常値の場合は例外として検知できる
-      console.error(e);
+      
+    const result = await authRegister(registerInfo);
+    if (!result.success) {
+      return alert(result.data?.message);
     }
+
+    setRegisterInfo({
+      username: "",
+      password: "",
+    });
   }, [registerInfo]);
 
   const handleLogin = useCallback(async () => {
-    // ログインリクエストの送信
-    // 非同期で実行されるため then で待ち受ける
-    try {
-      // 登録リクエストの送信
-      // 非同期で実行されるため await で待ち受ける
-      const loginResponse = await AuthLogin(loginInfo);
-      console.log(loginResponse);
+    const loginResult = await authLogin(loginInfo);
+    console.log(loginResult);
 
-      // エラー処理
-      if (isErrorResponse(loginResponse)) {
-        return alert(loginResponse.errorMessage);
-      }
-
-      const userResponse = await AuthUser();
-      console.log(userResponse);
-
-      // エラー処理
-      if (isErrorResponse(userResponse)) {
-        return alert(userResponse.errorMessage);
-      }
-      setAuth({ id: userResponse.id });
-      router.push("/sample_profile");
-    } catch (e) {
-      // HTTPステータスコードが異常値の場合は例外として検知できる
-      console.error(e);
+    if (!loginResult.success) {
+      return alert(loginResult.data?.message);
     }
-  }, [loginInfo]);
 
-  const handleLogout = useCallback(async () => {
-    // ログインリクエストの送信
-    // 非同期で実行されるため then で待ち受ける
-    try {
-      // 登録リクエストの送信
-      // 非同期で実行されるため await で待ち受ける
-      await AuthLogout();
+    const userResult = await authUser();
+    console.log(userResult);
 
-      setAuth({
-        id: "",
-      });
-      router.push("/sample");
-    } catch (e) {
-      // HTTPステータスコードが異常値の場合は例外として検知できる
-      console.error(e);
+    if (!userResult.success) {
+      return alert(userResult.data?.message);
     }
-  }, [auth]);
+
+    router.push("/home");
+  }, [loginInfo, router]);
 
   return (
     <div className={styles.content}>
@@ -180,18 +136,6 @@ const Sample = () => {
         </div>
         <Button type="button" className={styles.button} onClick={handleLogin}>
           ログイン
-        </Button>
-      </fieldset>
-      <fieldset className={styles.fieldset}>
-        <legend>最後にログインを行った認証情報</legend>
-        <div className={styles.form}>
-          <p>
-            ID:
-            <span>{auth.id}</span>
-          </p>
-        </div>
-        <Button type="button" className={styles.button} onClick={handleLogout}>
-          ログアウト
         </Button>
       </fieldset>
     </div>

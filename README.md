@@ -49,6 +49,7 @@ cp .env.example .env
 ```
 
 パスワード等の秘密情報には、任意の値を入れてください。
+`JWT_SECRET_KEY` には`openssl rand -hex 32`で生成した値を入れてください。
 
 <a id="initialize-container-setup"></a>
 

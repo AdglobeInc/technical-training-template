@@ -5,15 +5,13 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     entrypoint: /app/entrypoint.sh
-    command: watchfiles "python manage.py runserver 0.0.0.0:8000" .
+    command: watchfiles "python manage.py runserver 0.0.0.0:8000 --noreload" .
     volumes:
       - ./backend:/app
-      - /app/.ruff_cache
-      - /app/build
     ports:
       - 8000:8000
     environment:
-      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
+      - DJANGO_RUNSERVER_HIDE_WARNING=true
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -21,6 +19,7 @@ services:
       - DB_PORT=${DB_PORT}
       - ADMIN_USER=${DJANGO_ADMIN_USER}
       - ADMIN_PASS=${DJANGO_ADMIN_PASS}
+      - SECRET_KEY=${JWT_SECRET_KEY}
     depends_on:
       - pgsql
 
@@ -40,7 +39,7 @@ services:
       - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
       - INTERNAL_API_BASE_URL=${INTERNAL_API_BASE_URL}
       - NEXT_PUBLIC_API_TEST_URL=${NEXT_PUBLIC_API_TEST_URL}
-
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
   pgsql:
     image: postgres:17-alpine
     container_name: pgsql
