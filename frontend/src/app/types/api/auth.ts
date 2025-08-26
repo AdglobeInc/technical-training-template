@@ -6,6 +6,7 @@ export type RegisterResponse = UserResponse;
 export type RegisterErrorResponse = {
   message: string;
 };
+// export type RegisterErrors = Partial<Record<keyof RegisterRequest, string>>;
 
 export type LoginRequest = {
   username: string;

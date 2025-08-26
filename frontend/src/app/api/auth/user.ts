@@ -6,7 +6,7 @@ import { UserErrorResponse, UserResponse } from "@/app/types/api/auth";
  * @returns
  */
 export const authUser = async () => {
-  return callApi<UserResponse, UserErrorResponse>("/auth/user/id", {
+  return callApi<UserResponse, UserErrorResponse>("/auth/user", {
     method: "GET",
   });
 };

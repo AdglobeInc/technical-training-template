@@ -1,5 +1,7 @@
 "use client";
 
+import { RegisterErrors } from "@/app/types/api/base";
+import { validateRegisterForm } from "@/app/utils/validation";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 import { authLogin } from "../api/auth/login";
@@ -21,6 +23,7 @@ const Sample = () => {
     username: "",
     password: "",
   });
+  const [errors, setErrors] = useState<RegisterErrors>({});
 
   const handleOnChangeRegister = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,12 +36,26 @@ const Sample = () => {
   }, []);
 
   const handleRegister = useCallback(async () => {
-    const result = await authRegister(registerInfo);
-    console.log(result);
+    console.log(registerInfo);
 
+    const validationErrors = validateRegisterForm(registerInfo);
+    console.log(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
+      
+    const result = await authRegister(registerInfo);
     if (!result.success) {
       return alert(result.data?.message);
     }
+
+    setRegisterInfo({
+      username: "",
+      password: "",
+    });
   }, [registerInfo]);
 
   const handleLogin = useCallback(async () => {
@@ -66,7 +83,7 @@ const Sample = () => {
         <div className={styles.form}>
           <p>
             <label>
-              名前:
+              ユーザーID:
               <Input
                 name="username"
                 value={registerInfo.username}

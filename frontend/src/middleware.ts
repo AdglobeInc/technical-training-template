@@ -1,6 +1,7 @@
 import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
 
+
 /**
  * JWTの署名と有効期限を検証する
  * @param token 検証するJWT文字列
