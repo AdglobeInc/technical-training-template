@@ -1,18 +1,9 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-
-from concurrent.futures import ThreadPoolExecutor
-from django.contrib.auth import authenticate
 from django.conf import settings
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenVerifyView,
-)
-from rest_framework_simplejwt.exceptions import TokenError
-from .serializers import UserSerializer
+from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class GetUserIdView(APIView):
@@ -57,45 +48,9 @@ class LoginView(TokenObtainPairView):
                 secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
                 samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
             )
+        else:
+            response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
         return response
-
-
-class VerifyTokenView(TokenVerifyView):
-    """
-    ミドルウェアがアクセストークンの有効性を検証するための軽量なエンドポイント
-    """
-
-    permission_classes = [AllowAny]
-
-    def post(self, request, *args, **kwargs):
-        print("\n--- VerifyTokenView Called ---")
-
-        token_from_cookie = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_COOKIE"])
-        print("Token from cookie:", token_from_cookie)
-
-        if not token_from_cookie:
-            print("-> Verdict: No token in cookie. Returning 400.")
-            return Response({"error": "トークンがありません。"}, status=status.HTTP_400_BAD_REQUEST)
-
-        request.data["token"] = token_from_cookie
-
-        try:
-            print("Calling parent class (TokenVerifyView) to verify...")
-            response = super().post(request, *args, **kwargs)
-            print("-> Verdict: Parent class verification SUCCEEDED. Status:", response.status_code)
-            return response
-        except TokenError as e:
-            print(f"-> Verdict: Parent class verification FAILED with TokenError: {e}")
-            return Response(
-                {"error": "トークンが無効です。", "detail": str(e)},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-        except Exception as e:
-            print(f"-> Verdict: Parent class verification FAILED with an unexpected exception: {e}")
-            return Response(
-                {"error": "予期せぬエラーが発生しました。", "detail": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
 
 
 class LogoutView(APIView):
@@ -106,7 +61,7 @@ class LogoutView(APIView):
     permission_classes = [AllowAny]
 
     def delete(self, request, *args, **kwargs):
-        response = Response({"message": "ログアウトしました。"}, status=status.HTTP_200_OK)
+        response = Response(status=status.HTTP_204_NO_CONTENT)
         response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])
         response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"])
         return response

@@ -1,9 +1,13 @@
-export interface ErrorResponse {
-  status: "error";
-  errorMessage?: string;
-  cause?: unknown;
-}
-
-export const isErrorResponse = (response: unknown): response is ErrorResponse => {
-  return (response as ErrorResponse).status === "error";
+export type Success<T> = {
+  success: true;
+  data: T;
+  statusCode: number;
 };
+
+export type Failure<E> = {
+  success: false;
+  data: E;
+  statusCode: number;
+};
+
+export type Result<T, E> = Success<T> | Failure<E>;

@@ -1,57 +1,65 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { jwtVerify } from "jose";
+import { NextRequest, NextResponse } from "next/server";
 
-// 認証が必要なページのパスを定義
-const protectedPaths = ["/", "/profile"];
-
-export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("access_token")?.value;
-  const { pathname } = request.nextUrl;
-  const loginUrl = new URL("/sample", request.url);
-  console.log("--- Middleware Log ---");
-  console.log("Accessing Pathname:", pathname);
-  console.log("Token Exists:", !!token);
-  console.log("Is Protected Path?:", protectedPaths.includes(pathname));
-
-  if (!token) {
-    if (protectedPaths.includes(pathname)) {
-      console.log(`★★★ NEXT.JS MIDDLEWARE IS ALIVE! Path: ${request.nextUrl.pathname} ★★★`);
-      return NextResponse.redirect(loginUrl);
-    }
-    return NextResponse.next();
+/**
+ * JWTの署名と有効期限を検証する
+ * @param token 検証するJWT文字列
+ * @returns トークンが有効であれば true, 無効であれば false
+ */
+async function verifyToken(token: string): Promise<boolean> {
+  if (!process.env.JWT_SECRET_KEY) {
+    console.error("[Middleware] JWT_SECRET_KEY is not defined in .env file");
+    return false;
   }
 
   try {
-    const url = new URL("/api/auth/token/verify/", process.env.INTERNAL_API_BASE_URL).toString();
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `access_token=${token}`,
-      },
-    });
-
-    if (response.ok) {
-      if (pathname === "/sample") {
-        return NextResponse.redirect(new URL("/profile", request.url));
-      }
-      return NextResponse.next();
-    }
-
-    // トークンが無効な場合 (期限切れなど) はログインページへ
-    const redirectResponse = NextResponse.redirect(loginUrl);
-    // 無効なCookieを削除するようブラウザに指示
-    redirectResponse.cookies.delete("access_token");
-    redirectResponse.cookies.delete("refresh_token");
-    return redirectResponse;
-  } catch (error) {
-    console.error("Middlewareでの検証エラー:", error);
-    return NextResponse.redirect(loginUrl);
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
+    await jwtVerify(token, secret);
+    return true;
+  } catch {
+    return false;
   }
 }
 
-// Middlewareを適用するパスを指定
+const protectedPaths = ["/", "/home"];
+const publicPaths = ["/sample"];
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const loginUrl = new URL("/sample", request.url);
+  const homeUrl = new URL("/home", request.url);
+
+  const accessToken = request.cookies.get("access_token")?.value;
+  const refreshToken = request.cookies.get("refresh_token")?.value;
+
+  const isAccessTokenValid = accessToken ? await verifyToken(accessToken) : false;
+
+  let isAuthenticated = false;
+
+  if (isAccessTokenValid) {
+    isAuthenticated = true;
+  } else if (refreshToken) {
+    const isRefreshTokenValid = await verifyToken(refreshToken);
+    if (isRefreshTokenValid) {
+      isAuthenticated = true;
+    }
+  }
+
+  if (isAuthenticated && publicPaths.includes(pathname)) {
+    return NextResponse.redirect(homeUrl);
+  }
+
+  if (!isAuthenticated && protectedPaths.includes(pathname)) {
+    console.log("[Middleware] User is not authenticated. Redirecting to /sample.");
+    const response = NextResponse.redirect(loginUrl);
+    response.cookies.delete("access_token");
+    response.cookies.delete("refresh_token");
+    return response;
+  }
+
+  return NextResponse.next();
+}
+
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|\\.well-known|favicon.ico).*)"],
 };

@@ -2,23 +2,18 @@
 
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
-import { AuthLogin } from "../api/auth/login";
-import { AuthLogout } from "../api/auth/logout";
+import { authLogin } from "../api/auth/login";
 import { authRegister } from "../api/auth/register";
-import { AuthUser } from "../api/auth/user";
-import { isErrorResponse } from "../types/api/base";
+import { authUser } from "../api/auth/user";
 import { Button } from "./_components/Button/Button";
 import { Input } from "./_components/Input/Input";
 import styles from "./page.module.css";
 
 const Sample = () => {
   const router = useRouter();
-  const [auth, setAuth] = useState({
-    id: "",
-  });
 
   const [registerInfo, setRegisterInfo] = useState({
-    name: "",
+    username: "",
     password: "",
   });
 
@@ -29,7 +24,6 @@ const Sample = () => {
 
   const handleOnChangeRegister = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log("aaa");
     setRegisterInfo((prev) => ({ ...prev, [name]: value }));
   }, []);
 
@@ -39,68 +33,31 @@ const Sample = () => {
   }, []);
 
   const handleRegister = useCallback(async () => {
-    try {
-      // 登録リクエストの送信
-      // 非同期で実行されるため await で待ち受ける
-      const response = await authRegister(registerInfo);
-      console.log(response);
+    const result = await authRegister(registerInfo);
+    console.log(result);
 
-      // エラー処理
-      if (isErrorResponse(response)) {
-        return alert(response.errorMessage);
-      }
-    } catch (e) {
-      // HTTPステータスコードが異常値の場合は例外として検知できる
-      console.error(e);
+    if (!result.success) {
+      return alert(result.data?.message);
     }
   }, [registerInfo]);
 
   const handleLogin = useCallback(async () => {
-    // ログインリクエストの送信
-    // 非同期で実行されるため then で待ち受ける
-    try {
-      // 登録リクエストの送信
-      // 非同期で実行されるため await で待ち受ける
-      const loginResponse = await AuthLogin(loginInfo);
-      // console.log(loginResponse);
+    const loginResult = await authLogin(loginInfo);
+    console.log(loginResult);
 
-      // エラー処理
-      if (isErrorResponse(loginResponse)) {
-        return alert(loginResponse.errorMessage);
-      }
-
-      const userResponse = await AuthUser();
-      console.log(userResponse);
-      setAuth({ id: userResponse.id });
-
-      // エラー処理
-      if (isErrorResponse(userResponse)) {
-        return alert(userResponse.errorMessage);
-      }
-      router.push("/profile");
-    } catch (e) {
-      // HTTPステータスコードが異常値の場合は例外として検知できる
-      console.error(e);
+    if (!loginResult.success) {
+      return alert(loginResult.data?.message);
     }
-  }, [loginInfo]);
 
-  const handleLogout = useCallback(async () => {
-    // ログインリクエストの送信
-    // 非同期で実行されるため then で待ち受ける
-    try {
-      // 登録リクエストの送信
-      // 非同期で実行されるため await で待ち受ける
-      const response = await AuthLogout();
-      console.log(response);
+    const userResult = await authUser();
+    console.log(userResult);
 
-      setAuth({
-        id: "",
-      });
-    } catch (e) {
-      // HTTPステータスコードが異常値の場合は例外として検知できる
-      console.error(e);
+    if (!userResult.success) {
+      return alert(userResult.data?.message);
     }
-  }, [auth]);
+
+    router.push("/home");
+  }, [loginInfo, router]);
 
   return (
     <div className={styles.content}>
@@ -111,8 +68,8 @@ const Sample = () => {
             <label>
               名前:
               <Input
-                name="name"
-                value={registerInfo.name}
+                name="username"
+                value={registerInfo.username}
                 onChange={handleOnChangeRegister}
                 type="text"
               />
@@ -162,18 +119,6 @@ const Sample = () => {
         </div>
         <Button type="button" className={styles.button} onClick={handleLogin}>
           ログイン
-        </Button>
-      </fieldset>
-      <fieldset className={styles.fieldset}>
-        <legend>最後にログインを行った認証情報</legend>
-        <div className={styles.form}>
-          <p>
-            ID:
-            <span>{auth.id}</span>
-          </p>
-        </div>
-        <Button type="button" className={styles.button} onClick={handleLogout}>
-          ログアウト
         </Button>
       </fieldset>
     </div>

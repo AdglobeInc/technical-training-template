@@ -1,5 +1,6 @@
-import { LoginResponse, RegisterRequest, UserResponse } from "@/app/types/api/auth";
-import { ErrorResponse } from "@/app/types/api/base";
+import { RegisterErrorResponse, RegisterRequest, RegisterResponse } from "@/app/types/api/auth";
+import { Result } from "@/app/types/api/base";
+import { callApi } from "../callApi";
 
 /**
  * 新規登録API
@@ -8,14 +9,9 @@ import { ErrorResponse } from "@/app/types/api/base";
  */
 export const authRegister = async (
   request: RegisterRequest,
-): Promise<ErrorResponse | (LoginResponse & UserResponse)> => {
-  const url = new URL("/api/users", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-    },
+): Promise<Result<RegisterResponse, RegisterErrorResponse>> => {
+  return callApi("/auth/register", {
     method: "POST",
     body: JSON.stringify(request),
   });
-  return response.json();
 };

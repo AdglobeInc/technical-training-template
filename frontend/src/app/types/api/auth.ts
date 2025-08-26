@@ -1,25 +1,29 @@
-export interface RegisterRequest {
-  name: string;
-  password: string;
-}
-
-export interface LoginRequest {
+export type RegisterRequest = {
   username: string;
   password: string;
-}
+};
+export type RegisterResponse = UserResponse;
+export type RegisterErrorResponse = {
+  message: string;
+};
 
-export interface LoginResponse {
-  token: string;
-}
+export type LoginRequest = {
+  username: string;
+  password: string;
+};
+export type LoginResponse = UserResponse;
+export type LoginErrorResponse = {
+  message: string;
+};
 
-export interface LogoutRequest {
-  token: string;
-}
+export type LogoutResponse = null;
+export type LogoutErrorResponse = {
+  message: string;
+};
 
-export interface UserRequest {
-  token: string;
-}
-
-export interface UserResponse {
+export type UserResponse = {
   id: string;
-}
+};
+export type UserErrorResponse = {
+  message: string;
+};
