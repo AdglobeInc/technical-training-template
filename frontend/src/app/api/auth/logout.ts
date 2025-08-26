@@ -1,13 +1,13 @@
+import { LogoutErrorResponse, LogoutResponse } from "@/app/types/api/auth";
+import { callApi } from "../callApi";
+
 /**
  * ログアウトAPI
  * @param request
  * @returns
  */
-export const AuthLogout = async () => {
-  const url = new URL("/api/auth/logout/", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
-
-  fetch(url, {
-    credentials: "include",
+export const authLogout = async () => {
+  return callApi<LogoutResponse, LogoutErrorResponse>("/auth/logout/", {
     method: "DELETE",
   });
 };

@@ -7,5 +7,6 @@ WORKDIR /app
 
 RUN pip install uv
 
-COPY . .
+COPY pyproject.toml ./
+
 RUN uv pip install --system --no-cache .

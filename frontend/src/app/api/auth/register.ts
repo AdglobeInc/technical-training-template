@@ -1,24 +1,18 @@
-import { LoginResponse, RegisterRequest, UserResponse } from "@/app/types/api/auth";
-import { ErrorResponse } from "@/app/types/api/base";
+import { RegisterErrorResponse, RegisterRequest, RegisterResponse } from "@/app/types/api/auth";
+import { Result } from "@/app/types/api/base";
+import { callApi } from "../callApi";
 
 /**
  * 新規登録API
  * @param request
  * @returns
  */
-export const authRegister = async (
-  request: RegisterRequest,
-): Promise<ErrorResponse | (LoginResponse & UserResponse)> => {
-  const url = new URL("/api/auth/users/", process.env.NEXT_PUBLIC_API_BASE_URL).toString();
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-    },
+export const authRegister = async (request: RegisterRequest) => {
+  return callApi<RegisterResponse, RegisterErrorResponse>("/auth/users", {
     method: "POST",
     body: JSON.stringify(request),
     credentials: "include",
   });
-  return response.json();
 };
 
 export const validateField = (name: keyof RegisterRequest, value: string): string => {
