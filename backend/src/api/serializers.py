@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
         max_length=20,
         validators=[
             validators.UniqueValidator(
-                queryset=User.objects.all(), message="このユーザーIDはすでに使用されています。"
+                queryset=User.objects.all(), message="このユーザー名はすでに使用されています。"
             ),
             alphanumeric_validator,
         ],

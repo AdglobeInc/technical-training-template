@@ -11,6 +11,8 @@ function Home() {
 
   const handleUser = useCallback(async () => {
     const userResult = await authUser();
+    console.log(userResult);
+
     if (!userResult.success) {
       return alert(userResult.data?.message);
     }
