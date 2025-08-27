@@ -28,7 +28,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
-    command: bun dev
+    command: npm run dev
     volumes:
       - ./frontend:/app
       - /app/node_modules
