@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { authLogout } from "../api/auth/logout";
+import { authSignout } from "../api/auth/signout";
 import { authUser } from "../api/auth/user";
 
 function Home() {
@@ -21,19 +21,19 @@ function Home() {
     handleUser();
   }, [handleUser]);
 
-  const handleLogout = useCallback(async () => {
-    const result = await authLogout();
+  const handleSignout = useCallback(async () => {
+    const result = await authSignout();
     if (!result.success) {
       return alert(result.data?.message);
     }
-    router.push("/sample");
+    router.push("/signin");
   }, [router]);
 
   return (
     <>
       <div>page</div>
       <div>ユーザーID: {user}</div>
-      <button onClick={handleLogout}>サインアウト</button>
+      <button onClick={handleSignout}>サインアウト</button>
     </>
   );
 }

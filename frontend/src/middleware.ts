@@ -1,7 +1,6 @@
 import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
 
-
 /**
  * JWTの署名と有効期限を検証する
  * @param token 検証するJWT文字列
@@ -23,11 +22,11 @@ async function verifyToken(token: string): Promise<boolean> {
 }
 
 const protectedPaths = ["/", "/home"];
-const publicPaths = ["/sample"];
+const publicPaths = ["/signup", "/signin"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const loginUrl = new URL("/sample", request.url);
+  const loginUrl = new URL("/signin", request.url);
   const homeUrl = new URL("/home", request.url);
 
   const accessToken = request.cookies.get("access_token")?.value;
@@ -51,7 +50,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!isAuthenticated && protectedPaths.includes(pathname)) {
-    console.log("[Middleware] User is not authenticated. Redirecting to /sample.");
+    console.log("[Middleware] User is not authenticated. Redirecting to /signup.");
     const response = NextResponse.redirect(loginUrl);
     response.cookies.delete("access_token");
     response.cookies.delete("refresh_token");

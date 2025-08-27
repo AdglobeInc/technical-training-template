@@ -1,11 +1,11 @@
 "use client";
 
-import { RegisterErrors } from "@/app/types/api/base";
-import { validateRegisterForm } from "@/app/utils/validation";
+import { SignupValidateErrors } from "@/app/types/api/auth";
+// import { validateSignupForm } from "@/app/utils/validation";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
-import { authLogin } from "../api/auth/login";
-import { authRegister } from "../api/auth/register";
+import { authSignin } from "../api/auth/signin";
+import { authSignup } from "../api/auth/signup";
 import { authUser } from "../api/auth/user";
 import { Button } from "./_components/Button/Button";
 import { Input } from "./_components/Input/Input";
@@ -14,56 +14,58 @@ import styles from "./page.module.css";
 const Sample = () => {
   const router = useRouter();
 
-  const [registerInfo, setRegisterInfo] = useState({
+  const [signupInfo, setSignupInfo] = useState({
     username: "",
     password: "",
   });
 
-  const [loginInfo, setLoginInfo] = useState({
+  const [signinInfo, setSigninInfo] = useState({
     username: "",
     password: "",
   });
-  const [errors, setErrors] = useState<RegisterErrors>({});
+  const [errors, setErrors] = useState<SignupValidateErrors>();
 
-  const handleOnChangeRegister = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChangeSignup = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setRegisterInfo((prev) => ({ ...prev, [name]: value }));
+    setSignupInfo((prev) => ({ ...prev, [name]: value }));
   }, []);
 
-  const handleOnChangeLogin = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChangeSignin = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setLoginInfo((prev) => ({ ...prev, [name]: value }));
+    setSigninInfo((prev) => ({ ...prev, [name]: value }));
   }, []);
 
-  const handleRegister = useCallback(async () => {
-    console.log(registerInfo);
+  const handleSignup = useCallback(async () => {
+    console.log(signupInfo);
 
-    const validationErrors = validateRegisterForm(registerInfo);
-    console.log(validationErrors);
+    // const validationErrors = validateSignupForm(signupInfo);
+    // const hasErrors = Object.values(validationErrors).some((message) => message !== "");
 
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-    setErrors({});
-      
-    const result = await authRegister(registerInfo);
+    // if (hasErrors) {
+    //   setErrors(validationErrors);
+    //   return;
+    // }
+    // setErrors(undefined);
+
+    const result = await authSignup(signupInfo);
+    console.log(result);
+
     if (!result.success) {
-      return alert(result.data?.message);
+      return alert("登録に失敗しました。入力内容をご確認ください。");
     }
 
-    setRegisterInfo({
+    setSignupInfo({
       username: "",
       password: "",
     });
-  }, [registerInfo]);
+  }, [signupInfo]);
 
-  const handleLogin = useCallback(async () => {
-    const loginResult = await authLogin(loginInfo);
-    console.log(loginResult);
+  const handleSignin = useCallback(async () => {
+    const signinResult = await authSignin(signinInfo);
+    console.log(signinResult);
 
-    if (!loginResult.success) {
-      return alert(loginResult.data?.message);
+    if (!signinResult.success) {
+      return alert(signinResult.data?.message);
     }
 
     const userResult = await authUser();
@@ -74,7 +76,7 @@ const Sample = () => {
     }
 
     router.push("/home");
-  }, [loginInfo, router]);
+  }, [signinInfo, router]);
 
   return (
     <div className={styles.content}>
@@ -86,8 +88,8 @@ const Sample = () => {
               ユーザーID:
               <Input
                 name="username"
-                value={registerInfo.username}
-                onChange={handleOnChangeRegister}
+                value={signupInfo.username}
+                onChange={handleOnChangeSignup}
                 type="text"
               />
             </label>
@@ -97,14 +99,14 @@ const Sample = () => {
               パスワード:
               <Input
                 name="password"
-                value={registerInfo.password}
-                onChange={handleOnChangeRegister}
+                value={signupInfo.password}
+                onChange={handleOnChangeSignup}
                 type="password"
               />
             </label>
           </p>
         </div>
-        <Button type="button" className={styles.button} onClick={handleRegister}>
+        <Button type="button" className={styles.button} onClick={handleSignup}>
           登録
         </Button>
       </fieldset>
@@ -116,8 +118,8 @@ const Sample = () => {
               ユーザID:
               <Input
                 name="username"
-                value={loginInfo.username}
-                onChange={handleOnChangeLogin}
+                value={signinInfo.username}
+                onChange={handleOnChangeSignin}
                 type="text"
               />
             </label>
@@ -127,14 +129,14 @@ const Sample = () => {
               パスワード:
               <Input
                 name="password"
-                value={loginInfo.password}
-                onChange={handleOnChangeLogin}
+                value={signinInfo.password}
+                onChange={handleOnChangeSignin}
                 type="password"
               />
             </label>
           </p>
         </div>
-        <Button type="button" className={styles.button} onClick={handleLogin}>
+        <Button type="button" className={styles.button} onClick={handleSignin}>
           ログイン
         </Button>
       </fieldset>

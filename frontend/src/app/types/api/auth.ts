@@ -1,24 +1,25 @@
-export type RegisterRequest = {
+export type SignupRequest = {
   username: string;
   password: string;
 };
-export type RegisterResponse = UserResponse;
-export type RegisterErrorResponse = {
-  message: string;
-};
-// export type RegisterErrors = Partial<Record<keyof RegisterRequest, string>>;
-
-export type LoginRequest = {
+export type SignupResponse = UserResponse;
+export type SignupErrorResponse = {
   username: string;
   password: string;
 };
-export type LoginResponse = UserResponse;
-export type LoginErrorResponse = {
+export type SignupValidateErrors = Partial<Record<keyof SignupRequest, string>>;
+
+export type SigninRequest = {
+  username: string;
+  password: string;
+};
+export type SigninResponse = UserResponse;
+export type SigninErrorResponse = {
   message: string;
 };
 
-export type LogoutResponse = null;
-export type LogoutErrorResponse = {
+export type SignoutResponse = null;
+export type SignoutErrorResponse = {
   message: string;
 };
 

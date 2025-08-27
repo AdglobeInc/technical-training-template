@@ -1,12 +1,11 @@
-import { RegisterRequest } from "@/app/types/api/auth";
-import { RegisterErrors } from "@/app/types/api/base";
+import { SignupRequest, SignupValidateErrors } from "@/app/types/api/auth";
 /**
  * 登録フォーム全体を検証し、エラーオブジェクトを返す関数
- * @param data {RegisterRequest} フォームの入力データ
- * @returns {RegisterErrors} エラーがあれば、フィールド名をキーにしたエラーメッセージのオブジェクト
+ * @param data {SignupRequest} フォームの入力データ
+ * @returns {SignupValidateErrors} エラーがあれば、フィールド名をキーにしたエラーメッセージのオブジェクト
  */
-export const validateRegisterForm = (data: RegisterRequest): RegisterErrors => {
-  const errors: RegisterErrors = {};
+export const validateSignupForm = (data: SignupRequest): SignupValidateErrors => {
+  const errors: SignupValidateErrors = {};
 
   // --- ユーザー名の検証 ---
   if (!data.username) {
