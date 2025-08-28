@@ -16,7 +16,8 @@ function Home() {
     if (!userResult.success) {
       return alert(userResult.data?.message);
     }
-    setUser(userResult.data.id);
+
+    setUser(userResult.data.username);
   }, []);
 
   useEffect(() => {
@@ -34,7 +35,7 @@ function Home() {
   return (
     <>
       <div>page</div>
-      <div>ユーザーID: {user}</div>
+      <div>ユーザー名: {user}</div>
       <button onClick={handleSignout}>サインアウト</button>
     </>
   );

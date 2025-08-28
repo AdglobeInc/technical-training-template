@@ -28,10 +28,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
-    command: npm run dev
+    command: pnpm dev
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - /app/.pnpm-store
       - /app/.next
     ports:
       - 3000:3000

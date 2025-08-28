@@ -24,7 +24,7 @@ export type SignoutErrorResponse = {
 };
 
 export type UserResponse = {
-  id: string;
+  username: string;
 };
 export type UserErrorResponse = {
   message: string;
