@@ -1,5 +1,5 @@
-import { callApi } from "@/app/api/callApi";
-import { UserErrorResponse, UserResponse } from "@/app/types/api/auth";
+import { callApi } from "@/lib/api/callApi";
+import { UserErrorResponse, UserResponse } from "@/types/api/auth";
 
 /**
  * ユーザー情報取得API

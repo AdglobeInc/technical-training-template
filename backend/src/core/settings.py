@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
 ]
 
+AUTH_USER_MODEL = "api.User"
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",

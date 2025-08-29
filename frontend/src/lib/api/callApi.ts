@@ -1,6 +1,6 @@
+import { Result } from "@/types/api/base";
 import { StatusCodes } from "http-status-codes";
 import urlJoin from "url-join";
-import { Result } from "../types/api/base";
 
 /**
  * アプリケーション全体で使用する汎用APIクライアント
@@ -23,8 +23,8 @@ export const callApi = async <T, E>(
       ...options,
       credentials: "include",
       headers: {
-        "Content-Type": "application/json",
         ...options.headers,
+        "Content-Type": "application/json",
       },
     };
 

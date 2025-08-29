@@ -3,6 +3,7 @@ Dockerfile
 
 node_modules
 .next
+.pnpm-store
 
 .vscode
 .DS_Store

@@ -1,9 +1,9 @@
 "use client";
 
+import { authSignout } from "@/lib/api/auth/signout";
+import { authUser } from "@/lib/api/auth/user";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { authLogout } from "../api/auth/logout";
-import { authUser } from "../api/auth/user";
 
 function Home() {
   const router = useRouter();
@@ -11,29 +11,32 @@ function Home() {
 
   const handleUser = useCallback(async () => {
     const userResult = await authUser();
+    console.log(userResult);
+
     if (!userResult.success) {
       return alert(userResult.data?.message);
     }
-    setUser(userResult.data.id);
+
+    setUser(userResult.data.username);
   }, []);
 
   useEffect(() => {
     handleUser();
   }, [handleUser]);
 
-  const handleLogout = useCallback(async () => {
-    const result = await authLogout();
+  const handleSignout = useCallback(async () => {
+    const result = await authSignout();
     if (!result.success) {
       return alert(result.data?.message);
     }
-    router.push("/sample");
+    router.push("/signin");
   }, [router]);
 
   return (
     <>
       <div>page</div>
-      <div>ユーザーID: {user}</div>
-      <button onClick={handleLogout}>サインアウト</button>
+      <div>ユーザー名: {user}</div>
+      <button onClick={handleSignout}>サインアウト</button>
     </>
   );
 }
