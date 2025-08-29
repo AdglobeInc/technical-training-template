@@ -1,9 +1,9 @@
 "use client";
 
+import { authSignout } from "@/lib/api/auth/signout";
+import { authUser } from "@/lib/api/auth/user";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { authSignout } from "../api/auth/signout";
-import { authUser } from "../api/auth/user";
 
 function Home() {
   const router = useRouter();

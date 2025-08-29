@@ -1,5 +1,5 @@
-import { SignoutErrorResponse, SignoutResponse } from "@/app/types/api/auth";
-import { callApi } from "../callApi";
+import { callApi } from "@/lib/api/callApi";
+import { SignoutErrorResponse, SignoutResponse } from "@/types/api/auth";
 
 /**
  * ログアウトAPI

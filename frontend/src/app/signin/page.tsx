@@ -3,12 +3,12 @@
 import { Button } from "@/app/sample/_components/Button/Button";
 import { Input } from "@/app/sample/_components/Input/Input";
 import styles from "@/app/sample/page.module.css";
-import { SigninErrorResponse } from "@/app/types/api/auth";
+import { authSignin } from "@/lib/api/auth/signin";
+import { authUser } from "@/lib/api/auth/user";
+import { SigninErrorResponse } from "@/types/api/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
-import { authSignin } from "../api/auth/signin";
-import { authUser } from "../api/auth/user";
 
 const Signin = () => {
   const router = useRouter();

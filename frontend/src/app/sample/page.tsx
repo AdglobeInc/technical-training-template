@@ -1,12 +1,12 @@
 "use client";
 
-import { SignupValidateErrors } from "@/app/types/api/auth";
+import { SignupValidateErrors } from "@/types/api/auth";
 // import { validateSignupForm } from "@/app/utils/validation";
+import { authSignin } from "@/lib/api/auth/signin";
+import { authSignup } from "@/lib/api/auth/signup";
+import { authUser } from "@/lib/api/auth/user";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
-import { authSignin } from "../api/auth/signin";
-import { authSignup } from "../api/auth/signup";
-import { authUser } from "../api/auth/user";
 import { Button } from "./_components/Button/Button";
 import { Input } from "./_components/Input/Input";
 import styles from "./page.module.css";

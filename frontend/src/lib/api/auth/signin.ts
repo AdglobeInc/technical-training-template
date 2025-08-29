@@ -1,5 +1,5 @@
-import { callApi } from "@/app/api/callApi";
-import { SigninErrorResponse, SigninRequest, SigninResponse } from "@/app/types/api/auth";
+import { callApi } from "@/lib/api/callApi";
+import { SigninErrorResponse, SigninRequest, SigninResponse } from "@/types/api/auth";
 
 /**
  * ログインAPI

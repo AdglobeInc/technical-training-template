@@ -15,7 +15,8 @@
     "next": "15.4.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "url-join": "^5.0.0"
+    "url-join": "^5.0.0",
+    "zod": "^4.1.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

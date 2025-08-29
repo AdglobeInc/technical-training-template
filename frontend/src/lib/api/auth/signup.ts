@@ -1,5 +1,5 @@
-import { SignupErrorResponse, SignupRequest, SignupResponse } from "@/app/types/api/auth";
-import { callApi } from "../callApi";
+import { callApi } from "@/lib/api/callApi";
+import { SignupErrorResponse, SignupRequest, SignupResponse } from "@/types/api/auth";
 
 /**
  * 新規登録API

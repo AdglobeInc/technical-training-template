@@ -3,17 +3,17 @@
 import { Button } from "@/app/sample/_components/Button/Button";
 import { Input } from "@/app/sample/_components/Input/Input";
 import styles from "@/app/sample/page.module.css";
-import { SignupValidateErrors } from "@/app/types/api/auth";
-import { validateSignupForm } from "@/app/utils/validation";
+import { authSignup } from "@/lib/api/auth/signup";
+import { SignupValidateErrors } from "@/types/api/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
-import { authSignup } from "../api/auth/signup";
+import { z } from "zod";
 
 const Signup = () => {
   const router = useRouter();
 
-  const [signupInfo, setSignupInfo] = useState({
+  const [signupInput, setSignupInput] = useState({
     username: "",
     password: "",
   });
@@ -22,36 +22,51 @@ const Signup = () => {
 
   const handleOnChangeSignup = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSignupInfo((prev) => ({ ...prev, [name]: value }));
+    setSignupInput((prev) => ({ ...prev, [name]: value }));
   }, []);
 
   const handleSignup = useCallback(async () => {
-    console.log(signupInfo);
+    console.log(signupInput);
 
-    const validationErrors = validateSignupForm(signupInfo);
-    const hasErrors = Object.values(validationErrors).some((message) => message !== "");
+    const signupSchema = z.object({
+      username: z
+        .string()
+        .nonempty("ユーザーIDは必須です。")
+        .regex(/^[a-zA-Z0-9]+$/, "ユーザーIDは英数字のみ使用できます。")
+        .max(20, "ユーザーIDは20文字以内で入力してください。"),
+      password: z
+        .string()
+        .nonempty("パスワードは必須です。")
+        .regex(/^[a-zA-Z0-9]+$/, "パスワードは英数字のみ使用できます。")
+        .min(8, "パスワードは8文字以上20文字以内で入力してください")
+        .max(20, "パスワードは8文字以上20文字以内で入力してください"),
+    });
 
-    console.log(validationErrors);
+    const validatedSignupResult = signupSchema.safeParse(signupInput);
 
-    if (hasErrors) {
-      setErrors(validationErrors);
+    if (!validatedSignupResult.success) {
+      const fieldErrors = z.treeifyError(validatedSignupResult.error).properties;
+      setErrors({
+        username: fieldErrors?.username?.errors[0],
+        password: fieldErrors?.password?.errors[0],
+      });
       return;
     }
     setErrors(undefined);
 
-    const result = await authSignup(signupInfo);
+    const result = await authSignup(signupInput);
     console.log(result);
 
     if (!result.success) {
       return alert("登録に失敗しました。入力内容をご確認ください。");
     }
 
-    setSignupInfo({
+    setSignupInput({
       username: "",
       password: "",
     });
     router.push("/signin");
-  }, [signupInfo, router]);
+  }, [signupInput, router]);
 
   return (
     <div className={styles.content}>
@@ -63,7 +78,7 @@ const Signup = () => {
               ユーザー名:
               <Input
                 name="username"
-                value={signupInfo.username}
+                value={signupInput.username}
                 onChange={handleOnChangeSignup}
                 type="text"
               />
@@ -76,7 +91,7 @@ const Signup = () => {
               パスワード:
               <Input
                 name="password"
-                value={signupInfo.password}
+                value={signupInput.password}
                 onChange={handleOnChangeSignup}
                 type="password"
               />
