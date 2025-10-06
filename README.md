@@ -44,12 +44,38 @@ VSCode 起動後は[拡張機能のインストール](#vscode-extensions)を行
 以下のコマンドを実行し、必要な環境変数を設定します。
 
 ```bash
-# .env ファイルの生成
-cp .env.example .env
+# backend/.env ファイルの生成
+cp backend/.env.example backend/.env
 ```
 
-パスワード等の秘密情報には、任意の値を入れてください。
-`JWT_SECRET_KEY` には`openssl rand -hex 32`で生成した値を入れてください。
+生成した `backend/.env` を編集し、以下を必ず設定してください（空欄不可）。
+
+- 必須
+  - `POSTGRES_PASSWORD`（PostgreSQL のパスワード）
+  - `ADMIN_PASS`（Django 管理ユーザーのパスワード）
+  - `JWT_SECRET_KEY` は `openssl rand -hex 32` で生成
+
+例:
+
+```env
+ADMIN_USER=admin
+ADMIN_PASS=adminpass123
+
+POSTGRES_DB=technical-training-database
+POSTGRES_USER=user
+POSTGRES_PASSWORD=devpass123
+POSTGRES_HOST=pgsql
+POSTGRES_PORT=5432
+
+JWT_SECRET_KEY=$(openssl rand -hex 32 の結果)
+```
+
+すでにコンテナ/ボリュームを起動済みで `.env` を変更した場合は、初期化し直してください（ローカルDBデータは削除されます）。
+
+```bash
+docker compose down -v
+docker compose up -d --build
+```
 
 <a id="initialize-container-setup"></a>
 

@@ -10,24 +10,41 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import os
 from datetime import timedelta
 from pathlib import Path
 
+import environ
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables using django-environ.
+env = environ.Env()
+
+for candidate in (
+    BASE_DIR / ".env",
+    BASE_DIR.parent / ".env",
+    BASE_DIR.parent.parent / ".env",
+):
+    if candidate.exists():
+        environ.Env.read_env(candidate)
+        break
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY", default=None)
+if not SECRET_KEY:
+    SECRET_KEY = env("JWT_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=True)
 
-ALLOWED_HOSTS = ["backend", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = env.list(
+    "DJANGO_ALLOWED_HOSTS", default=["backend", "localhost", "127.0.0.1"]
+)
 
 
 # Application definition
@@ -85,12 +102,17 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT"),
+        "ENGINE": env("DB_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": env("DB_NAME", default=None)
+        or env("POSTGRES_DB"),
+        "USER": env("DB_USER", default=None)
+        or env("POSTGRES_USER"),
+        "PASSWORD": env("DB_PASSWORD", default=None)
+        or env("POSTGRES_PASSWORD"),
+        "HOST": env("DB_HOST", default=None)
+        or env("POSTGRES_HOST", default="localhost"),
+        "PORT": env("DB_PORT", default=None)
+        or env("POSTGRES_PORT", default="5432"),
     }
 }
 

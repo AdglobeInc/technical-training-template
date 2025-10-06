@@ -7,7 +7,7 @@ import { SignoutErrorResponse, SignoutResponse } from "@/types/api/auth";
  * @returns
  */
 export const authSignout = async () => {
-  return callApi<SignoutResponse, SignoutErrorResponse>("/auth/signout/", {
+  return callApi<SignoutResponse, SignoutErrorResponse>("auth/signout/", {
     method: "DELETE",
   });
 };

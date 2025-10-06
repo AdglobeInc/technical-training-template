@@ -7,7 +7,7 @@ import { SigninErrorResponse, SigninRequest, SigninResponse } from "@/types/api/
  * @returns
  */
 export const authSignin = async (request: SigninRequest) => {
-  return callApi<SigninResponse, SigninErrorResponse>("/auth/signin/", {
+  return callApi<SigninResponse, SigninErrorResponse>("auth/signin/", {
     method: "POST",
     body: JSON.stringify(request),
   });
