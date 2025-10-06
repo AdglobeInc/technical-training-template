@@ -1,129 +1,82 @@
 "use client";
 
+import { SignupValidateErrors } from "@/types/api/auth";
+// import { validateSignupForm } from "@/app/utils/validation";
+import { authSignin } from "@/lib/api/auth/signin";
+import { authSignup } from "@/lib/api/auth/signup";
+import { authUser } from "@/lib/api/auth/user";
+import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
-import { AuthLogin } from "../api/auth/login";
-import { AuthLogout } from "../api/auth/logout";
-import { authRegister } from "../api/auth/register";
-import { AuthUser } from "../api/auth/user";
-import { isErrorResponse } from "../types/api/base";
 import { Button } from "./_components/Button/Button";
 import { Input } from "./_components/Input/Input";
 import styles from "./page.module.css";
 
 const Sample = () => {
-  const [auth, setAuth] = useState({
-    token: "",
-    name: "",
-    email: "",
-  });
+  const router = useRouter();
 
-  const [registerInfo, setRegisterInfo] = useState({
-    name: "",
-    email: "",
+  const [signupInfo, setSignupInfo] = useState({
+    username: "",
     password: "",
   });
 
-  const [loginInfo, setLoginInfo] = useState({
-    email: "",
+  const [signinInfo, setSigninInfo] = useState({
+    username: "",
     password: "",
   });
+  const [errors, setErrors] = useState<SignupValidateErrors>();
 
-  const handleOnChangeRegister = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      setRegisterInfo((prev) => ({ ...prev, [name]: value }));
-    },
-    [],
-  );
+  const handleOnChangeSignup = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSignupInfo((prev) => ({ ...prev, [name]: value }));
+  }, []);
 
-  const handleOnChangeLogin = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      setLoginInfo((prev) => ({ ...prev, [name]: value }));
-    },
-    [],
-  );
+  const handleOnChangeSignin = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSigninInfo((prev) => ({ ...prev, [name]: value }));
+  }, []);
 
-  const handleRegister = useCallback(async () => {
-    try {
-      // 登録リクエストの送信
-      // 非同期で実行されるため await で待ち受ける
-      const response = await authRegister(registerInfo);
-      console.log(response);
+  const handleSignup = useCallback(async () => {
+    console.log(signupInfo);
 
-      // エラー処理
-      if (isErrorResponse(response)) {
-        return alert(response.errorMessage);
-      }
+    // const validationErrors = validateSignupForm(signupInfo);
+    // const hasErrors = Object.values(validationErrors).some((message) => message !== "");
 
-      setAuth((prev) => ({
-        ...prev,
-        token: response.token,
-        name: response.name,
-        email: response.email,
-      }));
-    } catch (e) {
-      // HTTPステータスコードが異常値の場合は例外として検知できる
-      console.error(e);
+    // if (hasErrors) {
+    //   setErrors(validationErrors);
+    //   return;
+    // }
+    // setErrors(undefined);
+
+    const result = await authSignup(signupInfo);
+    console.log(result);
+
+    if (!result.success) {
+      return alert("登録に失敗しました。入力内容をご確認ください。");
     }
-  }, [registerInfo]);
 
-  const handleLogin = useCallback(async () => {
-    // ログインリクエストの送信
-    // 非同期で実行されるため then で待ち受ける
-    try {
-      // 登録リクエストの送信
-      // 非同期で実行されるため await で待ち受ける
-      const loginResponse = await AuthLogin(loginInfo);
-      console.log(loginResponse);
+    setSignupInfo({
+      username: "",
+      password: "",
+    });
+  }, [signupInfo]);
 
-      // エラー処理
-      if (isErrorResponse(loginResponse)) {
-        return alert(loginResponse.errorMessage);
-      }
+  const handleSignin = useCallback(async () => {
+    const signinResult = await authSignin(signinInfo);
+    console.log(signinResult);
 
-      const userResponse = await AuthUser({
-        token: loginResponse.token,
-      });
-      console.log(userResponse);
-
-      // エラー処理
-      if (isErrorResponse(userResponse)) {
-        return alert(userResponse.errorMessage);
-      }
-
-      setAuth((prev) => ({
-        ...prev,
-        token: loginResponse.token,
-        name: userResponse.name,
-        email: userResponse.email,
-      }));
-    } catch (e) {
-      // HTTPステータスコードが異常値の場合は例外として検知できる
-      console.error(e);
+    if (!signinResult.success) {
+      return alert(signinResult.data?.message);
     }
-  }, [loginInfo]);
 
-  const handleLogout = useCallback(async () => {
-    // ログインリクエストの送信
-    // 非同期で実行されるため then で待ち受ける
-    try {
-      // 登録リクエストの送信
-      // 非同期で実行されるため await で待ち受ける
-      const response = await AuthLogout(auth);
-      console.log(response);
+    const userResult = await authUser();
+    console.log(userResult);
 
-      setAuth((prev) => ({
-        ...prev,
-        token: "",
-        name: "",
-        email: "",
-      }));
-    } catch (e) {
-      // HTTPステータスコードが異常値の場合は例外として検知できる
-      console.error(e);
+    if (!userResult.success) {
+      return alert(userResult.data?.message);
     }
-  }, [auth]);
+
+    router.push("/home");
+  }, [signinInfo, router]);
 
   return (
     <div className={styles.content}>
@@ -132,23 +85,12 @@ const Sample = () => {
         <div className={styles.form}>
           <p>
             <label>
-              名前:
+              ユーザーID:
               <Input
-                name="name"
-                value={registerInfo.name}
-                onChange={handleOnChangeRegister}
+                name="username"
+                value={signupInfo.username}
+                onChange={handleOnChangeSignup}
                 type="text"
-              />
-            </label>
-          </p>
-          <p>
-            <label>
-              メールアドレス:
-              <Input
-                name="email"
-                value={registerInfo.email}
-                onChange={handleOnChangeRegister}
-                type="email"
               />
             </label>
           </p>
@@ -157,18 +99,14 @@ const Sample = () => {
               パスワード:
               <Input
                 name="password"
-                value={registerInfo.password}
-                onChange={handleOnChangeRegister}
+                value={signupInfo.password}
+                onChange={handleOnChangeSignup}
                 type="password"
               />
             </label>
           </p>
         </div>
-        <Button
-          type="button"
-          className={styles.button}
-          onClick={handleRegister}
-        >
+        <Button type="button" className={styles.button} onClick={handleSignup}>
           登録
         </Button>
       </fieldset>
@@ -177,12 +115,12 @@ const Sample = () => {
         <div className={styles.form}>
           <p>
             <label>
-              メールアドレス:
+              ユーザID:
               <Input
-                name="email"
-                value={loginInfo.email}
-                onChange={handleOnChangeLogin}
-                type="email"
+                name="username"
+                value={signinInfo.username}
+                onChange={handleOnChangeSignin}
+                type="text"
               />
             </label>
           </p>
@@ -191,35 +129,15 @@ const Sample = () => {
               パスワード:
               <Input
                 name="password"
-                value={loginInfo.password}
-                onChange={handleOnChangeLogin}
+                value={signinInfo.password}
+                onChange={handleOnChangeSignin}
                 type="password"
               />
             </label>
           </p>
         </div>
-        <Button type="button" className={styles.button} onClick={handleLogin}>
+        <Button type="button" className={styles.button} onClick={handleSignin}>
           ログイン
-        </Button>
-      </fieldset>
-      <fieldset className={styles.fieldset}>
-        <legend>最後にログインを行った認証情報</legend>
-        <div className={styles.form}>
-          <p>
-            アクセストークン:
-            <span>{auth.token}</span>
-          </p>
-          <p>
-            名前:
-            <span>{auth.name}</span>
-          </p>
-          <p>
-            メールアドレス:
-            <span>{auth.email}</span>
-          </p>
-        </div>
-        <Button type="button" className={styles.button} onClick={handleLogout}>
-          ログアウト
         </Button>
       </fieldset>
     </div>
