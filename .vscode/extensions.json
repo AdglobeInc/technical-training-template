@@ -1,5 +1,16 @@
 {
     "recommendations": [
-        "ms-vscode-remote.remote-containers"
+        "charliermarsh.ruff",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "mechatroner.rainbow-csv",
+        "mermaidchart.vscode-mermaid-chart",
+        "ms-vscode-remote.remote-containers",
+        "ms-vscode-remote.remote-wsl",
+        "naumovs.color-highlight",
+        "oderwat.indent-rainbow",
+        "qcz.text-power-tools",
+        "streetsidesoftware.code-spell-checker",
+        "yoavbls.pretty-ts-errors"
     ]
 }

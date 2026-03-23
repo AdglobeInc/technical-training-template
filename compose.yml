@@ -54,7 +54,7 @@ services:
     env_file:
       - ./backend/.env
     entrypoint: /bin/sh
-    command: -c "PGWEB_DATABASE_URL=postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:$${POSTGRES_PORT}/$${POSTGRES_DB}?sslmode=disable pgweb"
+    command: -c "PGWEB_DATABASE_URL=postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:$${POSTGRES_PORT}/$${POSTGRES_DB}?sslmode=disable pgweb --bind=0.0.0.0"
     depends_on:
       - pgsql
 
