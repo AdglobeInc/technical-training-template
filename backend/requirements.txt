@@ -1,8 +1,8 @@
-django~=5.2
-djangorestframework~=3.16
-django-cors-headers~=4.7
+django~=6.1
+djangorestframework~=3.18
+django-cors-headers~=4.9
 djangorestframework-simplejwt~=5.5
-psycopg[binary]~=3.2
-django-environ~=0.11
-ruff~=0.12
-watchfiles~=1.1.0
+psycopg[binary]~=3.3
+django-environ~=0.14
+ruff~=0.16
+watchfiles~=1.2

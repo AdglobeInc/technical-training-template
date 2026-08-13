@@ -9,20 +9,29 @@ function Home() {
   const router = useRouter();
   const [user, setUser] = useState("");
 
-  const handleUser = useCallback(async () => {
-    const userResult = await authUser();
-    console.log(userResult);
+  useEffect(() => {
+    let isMounted = true;
 
-    if (!userResult.success) {
-      return alert(userResult.data?.message);
+    async function loadUser() {
+      const userResult = await authUser();
+      console.log(userResult);
+
+      if (!userResult.success) {
+        alert(userResult.data?.message);
+        return;
+      }
+
+      if (isMounted) {
+        setUser(userResult.data.username);
+      }
     }
 
-    setUser(userResult.data.username);
-  }, []);
+    void loadUser();
 
-  useEffect(() => {
-    handleUser();
-  }, [handleUser]);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleSignout = useCallback(async () => {
     const result = await authSignout();

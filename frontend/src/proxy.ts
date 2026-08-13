@@ -24,7 +24,7 @@ async function verifyToken(token: string): Promise<boolean> {
 const protectedPaths = ["/", "/home"];
 const publicPaths = ["/signup", "/signin"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const loginUrl = new URL("/signin", request.url);
   const homeUrl = new URL("/home", request.url);
