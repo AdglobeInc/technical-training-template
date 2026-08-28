@@ -263,6 +263,10 @@ docker compose exec frontend npm run build
 フロントエンドのテストは、今後 `Vitest` と `React Testing Library` を使う方針です。  
 現時点では README で案内する共通テストコマンドは未整備のため、最低限 `lint` と `build` を通してください。
 
+### バックエンドのテストについて
+
+VS Codeの拡張機能である`REST Client`の使用を推奨しています。  
+
 ## 8. VS Code のおすすめ設定
 
 WSL のターミナルで `code .` を実行して開いた VS Code 上で、推奨拡張機能のインストールを行ってください。

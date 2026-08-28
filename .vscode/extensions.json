@@ -11,6 +11,7 @@
         "oderwat.indent-rainbow",
         "qcz.text-power-tools",
         "streetsidesoftware.code-spell-checker",
-        "yoavbls.pretty-ts-errors"
+        "yoavbls.pretty-ts-errors",
+        "humao.rest-client"
     ]
 }
