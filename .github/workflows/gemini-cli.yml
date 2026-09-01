@@ -1,0 +1,135 @@
+name: Gemini PR Review
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/gemini review')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Review via Direct API (curl with retry)
+        env:
+          # 1. コメントしたユーザーの GitHub ユーザー名を取得
+          COMMENT_USER: ${{ github.event.comment.user.login }}
+          # 自動レビュー対象ユーザーの Secret を個別に登録しておく
+          GEMINI_API_KEY_MASAYUKI_IKEDA_ADGLOBE_CO_JP: ${{ secrets.GEMINI_API_KEY_MASAYUKI_IKEDA_ADGLOBE_CO_JP }}
+          GEMINI_API_KEY_SATO_HANAKO_ADGLOBE_CO_JP: ${{ secrets.GEMINI_API_KEY_SATO_HANAKO_ADGLOBE_CO_JP }}
+
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          REVIEW_PROMPT: |
+            あなたはシニアエンジニアです。
+            提供された「Git Diff（変更差分）」のみを元に、日本語でコードレビューを行ってください。
+
+            ## レビューのガイドライン
+            1. 指摘対象: 論理バグ、セキュリティリスク、パフォーマンス問題、重大な構文・型エラーに絞ってください。
+            2. 除外対象: 些末なスタイル指摘（インデントやスペース等）は無視してください。
+            3. 出力形式: 問題があれば具体的に指摘、問題がなければ「LGTM」とだけ出力してください。
+        run: |
+          # 2. ユーザー名を大文字・ハイフンをアンダースコアに変換（環境変数名として使えるように整形）
+          # 例: "taro-yamada" -> "TARO_YAMADA"
+          CLEAN_USER=$(echo "$COMMENT_USER" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+          SECRET_ENV_NAME="GEMINI_API_KEY_${CLEAN_USER}"
+          echo "Commented by: ${COMMENT_USER} (${SECRET_ENV_NAME})"
+
+          # 3. 該当するユーザーの API キーを取得（存在しない場合はデフォルトのキーを使用）
+          TARGET_API_KEY="${!SECRET_ENV_NAME}"
+
+          if [ -z "$TARGET_API_KEY" ]; then
+            echo "Warning: API Key for $COMMENT_USER not found. Falling back to default API Key."
+            TARGET_API_KEY="${{ secrets.GEMINI_API_KEY }}"
+          fi
+
+          if [ -z "$TARGET_API_KEY" ]; then
+            gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/comments" -f body="⚠️ APIキーが設定されていないため、レビューを実行できませんでした。"
+            exit 1
+          fi
+
+          echo "Processing PR #$PR_NUMBER..."
+
+          # 1. GitHub REST API から直接 Diff を取得
+          gh api -H "Accept: application/vnd.github.v3.diff" "repos/${{ github.repository }}/pulls/$PR_NUMBER" > diff_info.txt
+
+          if [ ! -s diff_info.txt ]; then
+            echo "Diff is empty."
+            gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/comments" -f body="変更点が見つかりませんでした。"
+            exit 0
+          fi
+
+          # 2. 差分サイズチェック (100KB制限)
+          DIFF_SIZE=$(wc -c < diff_info.txt)
+          if [ "$DIFF_SIZE" -gt 100000 ]; then
+             echo "Diff is too large ($DIFF_SIZE bytes)."
+             gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/comments" -f body="⚠️ 変更量が多すぎるため（100KB超）、レビューをスキップしました。"
+             exit 0
+          fi
+
+          # 3. リクエスト用 JSON を作成
+          DIFF_CONTENT=$(cat diff_info.txt)
+          FULL_TEXT="$REVIEW_PROMPT
+
+          --- DATA START ---
+          $DIFF_CONTENT"
+
+          jq -n --arg prompt "$FULL_TEXT" '{
+            contents: [{
+              parts: [{ text: $prompt }]
+            }]
+          }' > payload.json
+
+          # 4. 503 / 429 発生時に最大 3 回リトライする処理
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+          HTTP_STATUS=0
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            echo "Sending request to Gemini API (Attempt $((RETRY_COUNT+1))/$MAX_RETRIES)..."
+            
+            HTTP_STATUS=$(curl -s -o api_response.json -w "%{http_code}" \
+              -H "Content-Type: application/json" \
+              -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${TARGET_API_KEY}" \
+              -d @payload.json)
+
+            echo "API Response Status: $HTTP_STATUS"
+
+            # 200 OK であればループ脱出
+            if [ "$HTTP_STATUS" -eq 200 ]; then
+              break
+            fi
+
+            # 503 (混雑) または 429 (レート制限) の場合は 5 秒待ってリトライ
+            if [ "$HTTP_STATUS" -eq 503 ] || [ "$HTTP_STATUS" -eq 429 ]; then
+              RETRY_COUNT=$((RETRY_COUNT+1))
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "Server busy or rate limited ($HTTP_STATUS). Retrying in 10 seconds..."
+                sleep 10
+              fi
+            else
+              # その他のエラー（400番台等）はリトライせずに終了
+              break
+            fi
+          done
+
+          # 5. ステータスコードチェックとレスポンス抽出
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            ERROR_MSG=$(jq -r '.error.message // "Unknown error"' api_response.json)
+            echo "API Error: $ERROR_MSG"
+            gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/comments" -f body="⚠️ Gemini API エラーが発生しました (Status $HTTP_STATUS): $ERROR_MSG"
+            exit 1
+          fi
+
+          jq -r '.candidates[0].content.parts[0].text // empty' api_response.json > review_result.md
+
+          # 6. 結果を GitHub コメントへ投稿
+          if [ -s review_result.md ]; then
+             gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/comments" -F body=@review_result.md
+          else
+             echo "Gemini returned empty text."
+             gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/comments" -f body="⚠️ レビュー生成に失敗しました（応答テキストが空です）。"
+          fi
