@@ -39,7 +39,7 @@ Docker を使って開発環境を立ち上げる前提のため、PHP 向けの
 ブラウザから確認できる URL は以下です。
 
 - フロントエンド: http://localhost:3000
-- バックエンド: http://localhost:8000
+- バックエンド: http://localhost:8000/admin/
 - pgweb: http://localhost:8081
 
 ## 2. 事前に準備するもの
@@ -177,9 +177,10 @@ http://localhost:3000
 
 ### 6-2. バックエンドを開く
 
-http://localhost:8000
+http://localhost:8000/admin/
 
-Django の応答が返れば、バックエンドは正常です。
+Django の管理画面が表示されれば、バックエンドは正常です。
+なお、`http://localhost:8000/` はルート URL を定義していないため 404 になりますが、これは正常です。
 
 ### 6-3. API サンプルページを開く
 
@@ -294,7 +295,8 @@ WSL のターミナルで `code .` を実行して開いた VS Code 上で、推
 │   └── src
 │       ├── app        # Next.js App Router
 │       ├── lib        # API呼び出しなどの共通処理
-│       └── types      # 型定義
+│       ├── types      # 型定義
+│       └── proxy.ts   # 認証状態に応じたリダイレクト処理
 └── compose.yml
 ```
 
@@ -307,12 +309,12 @@ WSL のターミナルで `code .` を実行して開いた VS Code 上で、推
 
 ### バックエンド
 
-- [Django 公式ドキュメント](https://docs.djangoproject.com/ja/5.2/)
-- [django-admin / manage.py](https://docs.djangoproject.com/ja/5.2/ref/django-admin/)
-- [URL ルーティング](https://docs.djangoproject.com/ja/5.2/topics/http/urls/)
-- [Django モデル](https://docs.djangoproject.com/ja/5.2/topics/db/models/)
-- [マイグレーション](https://docs.djangoproject.com/ja/5.2/topics/migrations/)
-- [フィクスチャ](https://docs.djangoproject.com/ja/5.2/howto/initial-data/)
+- [Django 公式ドキュメント](https://docs.djangoproject.com/ja/6.1/)
+- [django-admin / manage.py](https://docs.djangoproject.com/ja/6.1/ref/django-admin/)
+- [URL ルーティング](https://docs.djangoproject.com/ja/6.1/topics/http/urls/)
+- [Django モデル](https://docs.djangoproject.com/ja/6.1/topics/db/models/)
+- [マイグレーション](https://docs.djangoproject.com/ja/6.1/topics/migrations/)
+- [フィクスチャ](https://docs.djangoproject.com/ja/6.1/howto/initial-data/)
 
 研修中は「画面を作る処理」と「API を返す処理」が別の場所にある点を意識すると、構成を理解しやすくなります。
 
@@ -527,7 +529,7 @@ JWT は、認証状態を表すためによく使われるトークン形式で�
 
 | 種類 | コマンド | 使っているもの | 補足 |
 | --- | --- | --- | --- |
-| `lint` | `npm run lint` | Next.js / ESLint | コードのルール違反を確認します。 |
+| `lint` | `npm run lint` | ESLint | コードのルール違反を確認します。Next.js 16 では `next lint` ではなく ESLint CLI を直接実行します。 |
 | `format` | `npm run format` | Prettier | コードの見た目を整えます。 |
 | `build` | `npm run build` | Next.js | 本番用ビルドが通るか確認します。 |
 | `test` | `npm run test` | Vitest / React Testing Library | コンポーネントやロジックのテストに使います。 |
